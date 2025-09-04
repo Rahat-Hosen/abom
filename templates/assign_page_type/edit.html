@@ -1,0 +1,247 @@
+[[extend 'layout.html']]
+
+[[block header]]
+[[icon='fa fa-chart-line']]
+[[breadcamp = 'Assign Page Type']]
+[[end]]
+
+
+[[block content]]
+<div class="container-section">
+    <div class="d-flex justify-content-between align-items-center border-bottom">
+        <span class="icon-text icon-text-bold">
+            <i class="fa-solid fa-plus"></i>
+            <span>Edit</span>
+        </span>
+
+        <div class="d-flex justify-content-end">
+            <div class="p-1">
+                <button type="button" class="btn btn-sm btn-light d-none" id="btn_view">
+                    <i class="fa-regular fa-eye"></i> <span class="ms-2">View</span>
+                </button>
+                <button type="button" class="btn btn-sm btn-light" id="btn_edit">
+                    <i class="fa-regular fa-pen-to-square"></i> <span class="ms-2">Edit</span>
+                </button>
+            </div>
+            <div class="p-1">
+                <a href="[[=URL('assign_page_type/index')]]" class="btn btn-sm btn-light">
+                    <i class="fa-solid fa-arrow-left"></i> <span class="ms-2">Back</span>
+                </a>
+            </div>
+            <div class="p-1">
+                <div class="btn-group">
+                    <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        Action
+                    </button>
+                    <!-- <ul class="dropdown-menu"> -->
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <!--<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#staticBackdrop"><i class="fas fa-add me-1"></i> Add</a>-->
+                        <a class="dropdown-item" href="delete?id=[[=request.query.get('id')]]" id="delete_btn">
+                            <i class="fa-solid fa-trash-can"></i><span class="ms-2">Delete</span></a>
+                    </div>
+                    <!-- </ul> -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container py-2">
+
+        [[= form.custom.begin ]]
+        <div id="custom_form">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3 custom_input">
+                        <label for="company" class="form-label">Company</label>
+                        [[= form.custom.widgets['company'] ]]
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3 custom_input">
+                        <label for="segment" class="form-label">Segment</label>
+                        [[= form.custom.widgets['segment'] ]]
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3 custom_input">
+                        <label for="category" class="form-label">Category</label>
+                        [[= form.custom.widgets['category'] ]]
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3 custom_input">
+                        <label for="news_supplement" class="form-label">Supplement</label>
+                        <select class="select_custom form-control" id="news_supplement" name="news_supplement">
+
+                        </select>
+                        <input type="hidden" id="news_supplement_hidden" value="[[=news_supplement_value]]">
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="mb-3 custom_input">
+                        <label for="page_type" class="form-label">Page type</label>
+                        [[= form.custom.widgets['page_type'] ]]
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3 custom_input">
+                        <label for="color" class="form-label">Color</label>
+                        [[= form.custom.widgets['color'] ]]
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="mb-3 custom_input">
+                        <label for="assign_page" class="form-label">Assign Pages</label>
+                        <select class="select_custom form-control" id="assign_page" name="assign_page">
+
+                        </select>
+                        <input type="hidden" id="assign_page_hidden" value="[[=assign_page_value]]">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3 ">
+                        <label for="status" class="form-label">Status</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="1" id="status" name="status" disabled
+                                [[if record.status==1:]] checked [[pass]]>
+                            <label class="form-check-label" for="status">
+                                Active
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="row d-none" id="edit_view_section">
+                <div class="col-12">
+                    <div class="d-flex justify-content-start">
+                        <div class="me-2">
+                            <button type="submit" class="btn btn-sm btn-primary">
+                                <i class="fa-regular fa-floppy-disk"></i> <span class="ms-2">Update</span>
+                            </button>
+                        </div>
+                        <div class="">
+                            <button type="reset" class="btn btn-sm btn-light">
+                                <i class="fa-solid fa-retweet"></i> <span class="ms-2">Reset</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        [[= form.custom.end ]]
+    </div>
+
+</div>
+[[end]]
+[[block scripts]]
+
+<script>
+    $(document).ready(function () {
+          // Get the saved values from hidden inputs
+          var savedSupplement = $('#news_supplement_hidden').val(); 
+          var savedAssignPage = $('#assign_page_hidden').val();
+
+        // Function to load supplements based on saved category
+        function loadSupplements(category, supplementValue) {
+            $.ajax({
+                url: '[[=URL("default", "get_news_supplement")]]',
+                method: 'GET',
+                data: { category: category },
+                dataType: 'json',
+                success: function (data) {
+                    var supplementDropdown = $('#news_supplement');
+                    supplementDropdown.empty();
+
+                    if (data.results.length > 0) {
+                        data.results.forEach(function (item) {
+                            supplementDropdown.append($('<option>', {
+                                value: item.name,
+                                text: item.name,
+                                selected: item.name === supplementValue
+                            }));
+                        });
+
+                        // Ensure correct value is selected
+                        supplementDropdown.val(supplementValue).trigger('change');
+                    } else {
+                        supplementDropdown.append($('<option>', { text: 'No supplements available', value: '' }));
+                        $('#assign_page').empty();
+                    }
+                },
+                error: function () {
+                    alert('Error loading supplements');
+                }
+            });
+        }
+
+        // Function to load assign page options based on saved supplement
+        function loadAssignPages(supplement, assignPageValue) {
+            $.ajax({
+                url: '[[=URL("default", "get_supplement_page_name")]]',
+                method: 'GET',
+                data: { supplement: supplement },
+                dataType: 'json',
+                success: function (data) {
+                    var pageNameDropdown = $('#assign_page');
+                    pageNameDropdown.empty();
+
+                    if (data.results.length > 0) {
+                        data.results.forEach(function (item) {
+                            pageNameDropdown.append($('<option>', {
+                                value: item.page_name,
+                                text: item.page_name,
+                                selected: item.page_name === assignPageValue
+                            }));
+                        });
+
+                        // Ensure correct value is selected
+                        pageNameDropdown.val(assignPageValue);
+                    } else {
+                        pageNameDropdown.append($('<option>', { text: 'No pages available', value: '' }));
+                    }
+                },
+                error: function () {
+                    alert('Error loading page names');
+                }
+            });
+        }
+
+        // On category change, reload supplements
+        $('#assign_page_type_category').on('change', function (e) {
+            var selectedValue = $(this).val();
+            loadSupplements(selectedValue, savedSupplement); // Pass saved supplement value
+        });
+
+        // On supplement change, reload pages
+        $('#news_supplement').on('change', function (e) {
+            var selectedValue = $(this).val();
+            loadAssignPages(selectedValue, savedAssignPage); // Pass saved page value
+        });
+
+        // Trigger initial loading of supplements and assign pages
+        var initialCategory = $('#assign_page_type_category').val(); // Get initial category value
+        loadSupplements(initialCategory, savedSupplement); // Load supplements on page load
+        if (savedSupplement) {
+            loadAssignPages(savedSupplement, savedAssignPage); // Load pages if a supplement is saved
+        }
+
+
+        let pageData = [];
+        $('#callbacks').multiSelect({
+            afterSelect: function (values) {
+                pageData.push(...values);
+            },
+            afterDeselect: function (values) {
+                pageData = pageData.filter(value => !values.includes(value));
+            },
+            selectableHeader: "<div class='callbacks form-label'>All Pages</div>",
+            selectionHeader: "<div class='callbacks form-label'>Assign Pages</div>",
+        });
+    });
+
+</script>
+[[end]]

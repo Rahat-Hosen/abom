@@ -1,0 +1,278 @@
+[[extend 'layout_landscap.html']]
+
+[[block header]]
+[[icon='fa fa-chart-line']]
+[[breadcamp = 'Proposal']]
+[[end]]
+
+[[block content]]
+
+<table width="100%">    
+    <tbody>
+        <tr>
+            <td width="50" >&nbsp;</td>
+            <td width="15" rowspan="2" style="padding:0px; margin-bottom:0px;"><img width="25px" height="40px" src="[[=URL('static','comp_logo2.png')]]"/></td>
+            <td style="text-align:center; font-size:24px; font-weight:bold"></td>
+            <td width="100">&nbsp;</td>
+        </tr>
+        <tr style="height:10px; background-color:#F0F0F0">
+            <td width="50" style="border-bottom:solid 1px #999; border-top:solid 1px #999;"></td>
+            <td style="border-bottom:solid 1px #999; border-top:solid 1px #999;"></td>
+            <td style="border-bottom:solid 1px #999; border-top:solid 1px #999;"></td>
+        </tr>      
+    </tbody>
+</table>
+
+<table width="100%">
+    <tbody>
+        <tr style="border-bottom:solid 2px #999;border-left:none; border-right:none; border-top:none">
+            <td align="center"></td>
+        </tr>
+    </tbody>
+</table>
+
+<table class="table table-sm">    
+    <tbody>
+      <tr>
+        <td>
+            <img src="[[=URL('static','palo_logo.png')]]" alt="Palo Logo" width="200" height="">
+        </td>
+        <td class="text-end fw-bold align-bottom">
+            <p class="m-1">Prothom Alo Digital</p>
+            <p class="m-1">Pragati Insurance Bhaban, 1st Floor</p>
+            <p class="m-1">20-21,Karwan Bazar, Dhaka-1215</p>
+        </td>
+      </tr>
+    </tbody>
+</table>
+
+<table width="100%" class="table-sm pb-0">    
+      <tr>
+        <td width="5%" class="fw-bold">
+          Client Name : 
+        </td>
+        <td width="27%">
+            [[=str(head_record['client_name'])]]
+        </td>
+        <td width="5%" class="fw-bold">
+          Segment : 
+        </td>
+        <td width="27%">
+            [[=str(head_record['segment'])]]
+        </td>
+        <td width="5%" class="fw-bold">
+          Proposal Date :
+        </td>
+        <td width="27%">
+            [[=head_record['proposal_date']]]
+        </td>
+        <td width="5%" class="fw-bold">
+          Status :
+        </td>
+        <td width="27%">
+            [[=head_record['status']]]
+        </td>
+      </tr>  
+</table>
+
+<table class="table border border-white table-sm mb-1">
+  <thead>
+    <tr>
+      <th scope="col" class="text-center">Transaction</th>
+    </tr>
+  </thead>
+</table>
+
+<table class="table table-bordered table-sm">
+    <thead>
+      <tr>
+        <th scope="col">Brand</th>
+        <th scope="col">Camp.(Time)</th>
+        <th scope="col">Content Placement</th>
+        <th scope="col">Site Section</th>
+        <th scope="col">Ad Size</th>
+        <th scope="col">Ad Type</th>
+        <th scope="col">Geo Target</th>
+        <th scope="col">Device</th>
+        <th scope="col">Publication</th>
+        <th scope="col" class="text-end">Gr. Rate</th>
+        <th scope="col" class="text-end">Qty/Imp</th>
+        <th scope="col" class="text-end">Gr. Amount</th>
+        <th scope="col" class="text-end">Discount %</th>
+        <th scope="col" class="text-end">Discount Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+        [[
+        import ast 
+        index=1
+        ]]
+        [[for d_row in details_record:]]
+        <tr>
+            <td>
+                [[=str(d_row['brand_name'])]] 
+            </td>
+            <td>
+                [[=d_row['campaign_duration']]]   
+            </td>
+            <td>
+                [[=d_row['content_placement']]] 
+            </td>
+            <td>
+                [[for row in site_sections:]]
+                [[ if row.section_name in ast.literal_eval(d_row['ad_position']):]] 
+                [[=row.section_name]],
+                [[pass]] 
+                [[pass]]
+            </td>
+            <td>
+                [[for row in adsizes:]]
+                [[ if row.adsize in ast.literal_eval(d_row['ad_size']):]]
+                [[=row.adsize]],
+                [[pass]]
+                [[pass]] 
+            </td>
+            <td>
+                [[=str(d_row['ad_type'])]] 
+            </td>
+            <td>
+                [[=str(d_row['geo_target'])]]
+            </td>
+            <td>
+                [[=str(d_row['device'])]]
+            </td>
+            <td>
+                [[=str(d_row['publication'])]]
+            </td>
+            <td class="text-end">
+                [[=d_row['cpm']]]  
+            </td>
+            <td class="text-end">
+                [[=d_row['qty_imp']]]       
+            </td>
+            <td class="text-end">
+                [[=d_row['cpm_amount']]]    
+            </td>
+            <td class="text-end">
+                [[=d_row['cpm_discount']]]    
+            </td>
+            <td class="text-end">
+                [[=d_row['cpm_discount_amount']]]    
+            </td>
+        </tr>
+        [[pass]]      
+    </tbody>
+</table>
+
+<table class="table-sm float-start" style="width:60%;">
+  <thead>
+    <th>Note:</th>
+ </thead>
+  <tbody>
+    <tr>
+      <td>
+        <p class='m-0'>1 CPM = 1000 impressions</p>
+        <p class='m-0'>Creatives are due 5 business days before launch date.</p>
+        <p class='m-0'>Ad fomats: jpeg/gif/png/swf (with clickTAG). Maximum weight limit for creative(s) is 40 KB.</p>
+        <p class='m-0'>15 % VAT on gross included and customer will pay excluding VAT to us.</p>
+        <p class='m-0'>Payment must be done in advance.</p>
+        <p class='m-0'>All the advertising space mentioned above will be provided based on availability. Our policy in ad serving is first come first serve.</p>
+        <p class='m-0'>All reserved products will expire in 14 days without a signed contract.</p>
+        <p class='m-0'>Prothom Alo preserves all the right to make any change in the website and to cancel/hold advertisement(s) from the schedule date in case of emergency/unavoidable situation or change the advertisement space.</p>
+      </td>        
+    </tr>    
+  </tbody>
+</table>
+
+<table class="table table-bordered table-sm float-end" style="width:20%;">
+    <tbody>
+      <tr>
+        <th scope="row">Sub-Total</th>
+        <td class="text-end">[[=head_record['net_amount']]]</td>        
+      </tr>
+      <tr>
+        <th scope="row">Discount</th>
+        <td class="text-end">[[=head_record['discount']]]</td>        
+      </tr>
+      <tr>
+        <th scope="row">Vatable Amount</th>
+        <td class="text-end">[[=head_record['vatable_amount']]]</td>        
+      </tr>
+      <tr>
+        <th scope="row">Vat 15%</th>
+        <td class="text-end">[[=head_record['vat']]]</td>   
+      </tr>
+      <tr>
+        <th scope="row">Net Total</th>
+        <td class="text-end fw-bold">[[=head_record['net_payable']]]</td>   
+      </tr>
+    </tbody>
+</table>
+
+<!--<table class="table table-bordered table-sm">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">First</th>
+        <th scope="col">Last</th>
+        <th scope="col">Handle</th>
+        <th scope="col">#</th>
+        <th scope="col">First</th>
+        <th scope="col">Last</th>
+        <th scope="col">Handle</th>
+        <th scope="col">#</th>
+        <th scope="col">First</th>
+        <th scope="col">Last</th>
+        <th scope="col">Handle</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th scope="row">1</th>
+        <td>Mark</td>
+        <td>Otto</td>
+        <td>@mdo</td>
+        <th scope="row">1</th>
+        <td>Mark</td>
+        <td>Otto</td>
+        <td>@mdo</td>
+        <th scope="row">1</th>
+        <td>Mark</td>
+        <td>Otto</td>
+        <td>@mdo</td>
+      </tr>
+      <tr>
+        <th scope="row">2</th>
+        <td>Jacob</td>
+        <td>Thornton</td>
+        <td>@fat</td>
+        <th scope="row">2</th>
+        <td>Jacob</td>
+        <td>Thornton</td>
+        <td>@fat</td>
+        <th scope="row">2</th>
+        <td>Jacob</td>
+        <td>Thornton</td>
+        <td>@fat</td>
+      </tr>
+      <tr>
+        <th scope="row">3</th>
+        <td>Larry</td>
+        <td>the Bird</td>
+        <td>@twitter</td>
+        <th scope="row">3</th>
+        <td>Larry</td>
+        <td>the Bird</td>
+        <td>@twitter</td>
+        <th scope="row">3</th>
+        <td>Larry</td>
+        <td>the Bird</td>
+        <td>@twitter</td>
+      </tr>
+    </tbody>
+</table>-->
+
+[[end]]
+
+[[block scripts]]
+[[end]]

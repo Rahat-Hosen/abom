@@ -1,0 +1,1222 @@
+[[extend 'layout.html']]
+
+[[block header]]
+[[icon='fa fa-chart-line']]
+[[breadcamp = 'Book Page']]
+[[end]]
+
+
+[[block content]]
+<style>
+    #table_id tr td,
+    table th td {
+        white-space: normal !important;
+    }
+
+    .input-container {
+        margin-bottom: 20px;
+    }
+
+    .input-container label {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .input-container input {
+        width: 100px;
+        padding: 5px;
+    }
+
+    #grid-container {
+        display: grid;
+        grid-template-columns: repeat(16, 1fr);
+        /* 16 to support half-columns */
+        gap: 0px;
+        width: 21.2rem;
+        border: 1px solid rgba(204, 201, 250);
+        position: relative;
+    }
+
+    .grid-item {
+        height: 10px;
+        /* Adjusted for half-inch rows */
+        box-sizing: border-box;
+        /* transition: background-color 0.3s; */
+    }
+
+    /* Rows */
+    .grid-item.solid {
+        border-top: 2px solid rgba(204, 201, 250);
+        /* Solid top border for whole-inch rows */
+    }
+
+    .grid-item.dotted {
+        border-top: 1px dotted #e7e7e7;
+        /* Dotted top border for half-inch rows */
+    }
+
+    /* Columns */
+    .grid-item.col-solid {
+        border-left: 2px solid rgba(204, 201, 250);
+        /* Solid left border for whole-inch columns */
+    }
+
+    .grid-item.col-dotted {
+        border-left: 1px dotted #e7e7e7;
+        /* Dotted left border for half-inch columns */
+    }
+
+    .selected {
+        background-color: rgba(204, 201, 250);
+    }
+
+    .selection-overlay {
+        position: absolute;
+        background-color: rgb(230, 229, 250);
+        color: #000000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 8px;
+        font-weight: bold;
+        text-align: center;
+        /* text-shadow: 1px 1px 2px rgba(204, 201, 250); */
+        cursor: move;
+        pointer-events: auto;
+        z-index: 10;
+        box-sizing: border-box;
+        padding: 5px;
+        border: rgb(181, 176, 248) 2px solid;
+    }
+
+    .selection-overlay.overflow {
+        border-color: red !important;
+    }
+
+    .col-md-customs {
+        flex: 0 0 auto;
+        width: 18%;
+    }
+
+    .layout.fixed-sidebar .sidebar~.layout {
+        overflow: hidden;
+    }
+</style>
+<div class="container-section">
+    <div class="d-flex justify-content-between align-items-center border-bottom">
+        <span class="icon-text icon-text-bold">
+            <i class="fa-solid fa-plus"></i>
+            <span>Edit</span>
+        </span>
+
+        <div class="d-flex justify-content-end">
+            <div class="p-1">
+                [[ if head_record['booking_cancel_status'] != 1: ]]
+                    [[ if head_record['confirm'] == 1: ]]
+                    <button type="button" class="btn btn-sm btn-success disabled"> 
+                        <span class="ms-2">Confirmed</span>
+                    </button>
+    
+                    [[ elif head_record['hold'] == 1: ]]
+                    <button type="button" class="btn btn-sm btn-warning hold-button disabled">
+                        <span class="ms-2">Hold</span>
+                    </button>
+    
+                    [[ else: ]]
+                    <button type="button" class="btn btn-sm btn-primary disabled">
+                        <span class="ms-2">Entered</span>
+                    </button>
+    
+                    [[ pass ]]
+                    
+                [[ pass ]]
+                [[ if head_record['booking_cancel_status'] == 1: ]]
+                    <button type="button" class="btn btn-sm btn-danger disabled">
+                        <span class="ms-2">Canceled</span>
+                    </button>
+                    [[ pass ]]
+                </div>
+            <div class="p-1">
+                <button type="button" class="btn btn-sm btn-light d-none" id="btn_view">
+                    <i class="fa-regular fa-eye"></i> <span class="ms-2">View</span>
+                </button>
+                <button type="button" class="btn btn-sm btn-light" id="btn_edit">
+                    <i class="fa-regular fa-pen-to-square"></i> <span class="ms-2">Edit</span>
+                </button>
+            </div>
+            
+            <div class="p-1">
+                <a href="[[=URL('book_page/index')]]" class="btn btn-sm btn-light">
+                    <i class="fa-solid fa-arrow-left"></i> <span class="ms-2">Back</span>
+                </a>
+            </div>
+            <div class="p-1">
+                <div class="btn-group">
+                    <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        Action
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item" href="delete?id=[[#=request.query.get('id')]]" id="delete_btn">
+                            <i class="fa-solid fa-trash-can"></i><span class="ms-2">Delete</span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container py-2">
+        <form action="[[=URL('book_page','book_page_update')]]?id=[[=head_record['id']]]" method="POST">
+            <div id="custom_form">
+                <div class="row">
+                    <div class="col-md-8">
+                        <!-- start scrollable -->
+                        <div class="" style="height: 480px; overflow-y: scroll; overflow-x: hidden;">
+                            <!-- Start Booking Information -->
+                            <span class="text-center fw-bold p-1 my-2 d-block rounded-1"
+                                style="color: #4f5762; background-color: var(--master-primary-light) !important;">Booking
+                                Information</span>
+                                <input hidden type="text" id="booking_id" name="booking_id"
+                                            value="[[=head_record['booking_id']]]" class="form-control">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3 custom_input">
+                                        <label for="booking_date" class="form-label">Booking Date</label>
+                                        <input type="date" id="booking_date" name="booking_date"
+                                            value="[[=head_record['booking_date']]]" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3 custom_input">
+                                        <label for="publish_date" class="form-label">Publish Date</label>
+                                        <input type="date" id="publish_date" value="[[=head_record['publish_date']]]"
+                                            name="publish_date" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3 custom_input">
+                                        <label for="news_supplement" class="form-label">Supplement</label>
+                                        <select class="select_custom form-control form-select-sm selectChange" id="news_supplement"
+                                            name="news_supplement">
+                                            <option value="">Select</option>
+                                            [[ for row in alldays_items:]]
+                                            <option value="[[=row.news_supplement]]" [[if str(head_record['news_supplement'])==str(row.news_supplement):]] selected [[pass]]>
+                                                [[=row.news_supplement]]</option>
+                                            [[pass]]
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3 custom_input">
+                                        <label for="page_type" class="form-label">Page Type</label>
+                                        <select class="select_custom form-control" id="page_type" name="page_type">
+                                         
+                                        </select>
+                                        <input type="hidden" id="page_type_hidden" value="[[=head_record['page_type']]]">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3 custom_input">
+                                        <label for="page_name" class="form-label">Page Name</label>
+                                        <select class="select_custom form-control" id="page_name" name="page_name">
+                                            <option value="">Select</option>
+                                        </select>
+                                        <input type="hidden" id="page_name_hidden" value="[[=head_record['page_name']]]">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3 custom_input">
+                                        <label for="customer_id" class="form-label">ID</label>
+                                        <select class="select_custom form-control form-select-sm selectChange"
+                                            name="customer_id">
+                                            <option value="">Select Customer Id</option>
+                                            [[ for row in customer_ids:]]
+                                            <option value="[[=row.accpac_id]]" [[if str(head_record['customer_id'])==str(row.accpac_id):]] selected
+                                                [[pass]]>[[=row.accpac_id]]</option>
+                                            [[pass]]
+                                        </select>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3 custom_input">
+                                        <label for="customer_name" class="form-label">Name</label>
+                                        <select class="select_custom form-control form-select-sm selectChange"
+                                            name="customer_name">
+                                            <option value="">Select Customer Name</option>
+                                            [[ for row in customer_names:]]
+                                            <option value="[[=row.name]]" [[if str(head_record['customer_name'])==str(row.name):]] selected [[pass]]>
+                                                [[=row.name]]</option>
+                                            [[pass]]
+                                        </select>
+
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3 custom_input">
+                                        <label for="customer_type" class="form-label">Customer Type</label>
+                                        <select class="select_custom form-control form-select-sm selectChange"
+                                            name="customer_type">
+                                            <option value="">Select Customer Type</option>
+                                            [[ for row in customer_types:]]
+                                            <option value="[[=row.name]]" [[if str(head_record['customer_type']).strip()==str(row.name).strip():]]
+                                                selected [[pass]]>[[=row.name]]</option>
+                                            [[pass]]
+                                        </select>
+
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3 custom_input">
+                                        <label for="brand" class="form-label">Brand</label>
+                                        <select class="select_custom form-control form-select-sm selectChange"
+                                            id="brand" name="brand">
+                                            <option value="">Select Brand</option>
+                                            [[ for row in brands:]]
+                                            <option value="[[=row.name]]" [[if str(head_record['brand'])==str(row.name):]] selected [[pass]]>
+                                                [[=row.name]]</option>
+                                            [[pass]]
+                                        </select>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3 custom_input">
+                                        <label for="advertiser" class="form-label">Advertiser</label>
+                                        <select class="select_custom form-control" id="advertiser" name="advertiser">
+                                            <option value="">Select</option>
+            
+                                        </select>
+                                        <input type="hidden" id="advertiser_hidden" value="[[=head_record['advertiser']]]">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3 custom_input">
+                                        <label for="adv_sector" class="form-label">Adv Sector</label>
+                                        <select class="select_custom form-control" id="adv_sector" name="adv_sector">
+                                            <option value="">Select</option>
+            
+                                        </select>
+                                        <input type="hidden" id="adv_sector_hidden" value="[[=head_record['adv_sector']]]">
+
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="mb-3 custom_input">
+                                        <label for="reference" class="form-label">Reference</label>
+                                        <input type="text" id="reference" name="reference"
+                                            value="[[=head_record['reference']]]" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3 custom_input">
+                                        <label for="title" class="form-label">Title</label>
+                                        <input type="text" id="title" name="title" value="[[=head_record['title']]]"
+                                            class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3 custom_input">
+                                        <label for="region" class="form-label">Region</label>
+                                        <select class="select_custom form-control form-select-sm selectChange"
+                                            name="region">
+                                            <option value="">Select Region</option>
+                                            [[ for row in utils_region:]]
+                                            <option value="[[=row.name]]" [[if str(head_record['region'])==str(row.name):]] selected
+                                                [[pass]]>[[=row.name]]</option>
+                                            [[pass]]
+                                        </select>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <!-- End Booking Information -->
+
+                            <!-- Start Pricing Information -->
+                            <span class="text-center fw-bold p-1 my-2 d-block rounded-1"
+                                style="color: #4f5762; background-color: var(--master-primary-light) !important;">Pricing
+                                Information
+                            </span>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3 custom_input">
+                                        <label for="payment_type" class="form-label">Payment Type</label>
+                                        <select class="select_custom form-control form-select-sm selectChange"
+                                            name="payment_type">
+                                            <option value="">Select Payment Type</option>
+                                            <option value="Cash" [[if str(head_record['payment_type'])=='Cash' :]] selected [[pass]]>Cash</option>
+                                            <option value="Credit" [[if str(head_record['payment_type'])=='Credit' :]] selected [[pass]]>Credit</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="mb-3 custom_input">
+                                        <div class="input-container">
+                                            <label for="col">Columns (0-8):</label>
+                                            <input name="col" type="number" id="col" min="0" max="8" step="0.5"
+                                                value="[[=head_record['col']]]">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3 custom_input">
+                                        <div class="input-container">
+                                            <label for="inch">Inches (0-20.5):</label>
+                                            <input name="inch" type="number" id="inch" min="0" max="20.5" step="0.5"
+                                                value="[[=head_record['inch']]]">
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3 custom_input">
+                                        <label for="credit_limit" class="form-label">Credit Limit</label>
+                                        <input type="text" id="credit_limit" name="credit_limit"
+                                            value="[[=head_record['credit_limit']]]" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3 custom_input">
+                                        <label for="outstanding" class="form-label">Outstanding</label>
+                                        <input type="text" id="outstanding" name="outstanding"
+                                            value="[[=head_record['outstanding']]]" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3 custom_input">
+                                        <label for="availed" class="form-label">Availed</label>
+                                        <input type="text" id="availed" name="availed"
+                                            value="[[=head_record['availed']]]" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="mb-3 custom_input">
+                                        <label for="color_type" class="form-label">Color Type</label>
+                                        <select class="select_custom form-control form-select-sm selectChange" name="color_type">
+                                            <option value="">Select Color Type</option>
+                                            <option value="Color" [[= 'selected' if str(head_record['color_type']).lower() == 'color' else '' ]]>Color</option>
+                                            <option value="Black & White" [[= 'selected' if str(head_record['color_type']).lower() == 'black & white' else '' ]]>Black & White</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-2">
+                                    <div class="mb-3 custom_input">
+                                        <label for="rate" class="form-label">Rate</label>
+                                        <input type="text" id="rate" name="rate" value="[[=head_record['rate']]]"
+                                            class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="mb-3 custom_input">
+                                        <label for="subtotal" class="form-label">Subtotal</label>
+                                        <input type="text" id="subtotal" name="subtotal"
+                                            value="[[=head_record['subtotal']]]" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="mb-3 custom_input">
+                                        <label for="discount_percentage" class="form-label">Discount(%)</label>
+                                        <input type="text" id="discount_percentage" name="discount_percentage"
+                                            value="[[=head_record['discount_percentage']]]" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="mb-3 custom_input">
+                                        <label for="discount_amount" class="form-label">Discount</label>
+                                        <input type="text" id="discount_amount" name="discount_amount"
+                                            value="[[=head_record['discount_amount']]]" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="mb-3 custom_input">
+                                        <label for="gross_total" class="form-label">Gross Total</label>
+                                        <input type="text" id="gross_total" name="gross_total"
+                                            value="[[=head_record['gross_total']]]" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row  ">
+                                
+                                
+                                <div class="col-md-4">
+                                    <div class="mt-6 ">
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" id="specific_input" name="specific_input">
+                                            <label class="form-check-label" for="specific_input">Specific</label>
+                                        </div>
+                                        <input type="text" id="specific" name="specific"
+                                            value="[[=head_record['specific']]]" class="form-control" disabled>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mt-6 ">
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" id="box_input"
+                                                name="box_input" onchange="toggleFixedRateInput()">
+                                            <label class="form-check-label" for="box_input">Box</label>
+                                        </div>
+                                        <input type="text" id="box" name="box" value="[[=head_record['box']]]"
+                                            class="form-control" disabled>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3 custom_input">
+                                        <label for="additional_charge" class="form-label">Additonal Charge</label>
+                                        <input type="text" id="additional_charge" name="additional_charge"
+                                            value="[[=head_record['additional_charge']]]" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="vat_input" name="vat_input">
+                                            <label class="form-check-label" for="vat_input">
+                                                VAT 15%
+                                            </label>
+                                        </div>
+                                        <input type="text" id="vat" name="vat" value="[[=head_record['vat']]]" class="form-control" readonly>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <div class="mt-6 ">
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" id="fixed_rate_input" name="fixed_rate_input">
+                                            <label class="form-check-label" for="fixed_rate_input">Fixed Rate</label>
+                                        </div>
+                                        <input type="text" id="fixed_rate" name="fixed_rate"
+                                               value="[[=head_record['fixed_rate']]]" class="form-control">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <div class="mb-3 custom_input">
+                                        <label for="net_total" class="form-label">Net Total</label>
+                                        <input type="text" id="net_total" name="net_total"
+                                            value="[[=head_record['net_total']]]" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-md-4">
+                                    <div class="mb-3 custom_input">
+                                        <label for="confused_field" class="form-label">Confused Field</label>
+                                        <select class="select_custom form-control form-select-sm selectChange"
+                                            name="confused_field" multiple>
+                                            <option value="">Select Confused Field</option>
+                                            <option value="customer_type" [[if 'customer_type' in  head_record['confused_field']:]] selected [[pass]]>Customer Type</option>
+                                            <option value="brand" [[if 'brand' in head_record['confused_field']:]] selected [[pass]]>Brand</option>
+                                            <option value="adv_category" [[if 'adv_category' in head_record['confused_field']:]] selected [[pass]]>Adv. Category
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="status" class="form-label">Status</label>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="1" id="status" name="status" disabled
+                                            [[if head_record.get('status', 0) == 1:]] checked [[pass]]>
+                                            <label class="form-check-label" for="status">
+                                                Active
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End Pricing Information -->
+                            <br>
+                            <div class="row">
+                                <div class="col-12 mb-4" style="margin-left: 10px;">
+                                    <div class="d-flex justify-content-start"> 
+
+                                        [[ if head_record['booking_cancel_status'] != 1: ]]
+                                            
+                                            [[ if head_record['confirm'] == 1: ]]
+                                                <!-- Confirmed: No need for confirm button -->
+                                            [[ else: ]]
+                                                <div class="me-2">
+                                                    <button type="submit" class="btn btn-sm btn-primary">
+                                                        <i class="fa-regular fa-floppy-disk"></i> <span class="ms-2">Update</span>
+                                                    </button>
+                                                </div>
+                                    
+                                                <div class="me-2"> 
+                                                    <button type="button" class="btn btn-sm btn-success" 
+                                                            id="confirmButton" 
+                                                            data-booking-id="[[=head_record['booking_id']]]"
+                                                            data-value="[[=head_record['confirm']]]">
+                                                        <i class="fa-regular fa-check-circle"></i> 
+                                                        <span class="ms-2">Confirm</span>
+                                                    </button>
+                                                </div> 
+                                            [[ pass ]]
+                                            
+                                            [[ if head_record['confirm'] != 1: ]]
+                                                <div class="me-2"> 
+                                                    <button type="button" class="btn btn-sm btn-warning hold-button" 
+                                                            id="holdButton" 
+                                                            data-booking-id="[[=head_record['booking_id']]]"
+                                                            data-value="[[=head_record['hold']]]">
+                                                        <i class="fa-regular fa-pause-circle"></i> 
+                                                        <span class="ms-2">Hold</span>
+                                                    </button>
+                                                </div> 
+                                            [[ else: ]]
+                                            [[ pass ]]
+                                            <div class="">
+                                                <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                                                    <i class="fa-regular fa-trash-can"></i> <span class="ms-2 multidatevalue">Cancel</span>
+                                                </button>
+                                            </div> 
+                                            
+                                        [[ pass ]]
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- end scrollable -->
+                    </div>
+                    <!-- Start News Grid Layout -->
+                    <div class="col-md-4">
+                        <span class="text-center fw-bold p-1 my-2 d-block rounded-1"
+                            style="color: #4f5762; background-color: var(--master-primary-light) !important;">
+                            Layout
+                        </span>
+                        <div id="grid-container">
+                            <!-- Insert your interactive grid layout here -->
+                        </div>
+                    </div>
+                    <!-- End News Grid Layout -->
+                </div>
+            </div>
+    </div>
+    <!--  -->
+</div>
+</form>
+</div>
+
+
+
+
+
+</div>
+[[end]]
+
+
+
+
+[[block modal]]
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropLabel">Cancel this booking?</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="[[=URL('book_page','book_cancel')]]" method="POST" id="classified_form">
+            <div id="custom_form">
+                <div class="modal-body">
+                    <div class="col-md-4">
+                        <div class="mb-4">
+                            <label for="region" class="form-label">Causes</label>
+                            <select class="select_custom_modal form-control" style="cursor: pointer; "
+                                    name="cause"> <option value="">Select Cause</option>
+                                [[ for row in cause_cancels:]]
+                                <option value="[[=row.cause]]">[[=row.cause]]</option>
+                                [[pass]]
+                            </select>
+                        </div>
+                        <input type="hidden" id="booking_id" name="booking_id"  value="[[=head_record['booking_id']]]">
+                        <input type="hidden" id="booking_cancel_status" name="booking_cancel_status"  value="[[=head_record['booking_cancel_status']]]">
+                        <input type="hidden" id="booking_date" name="booking_date" value="[[=head_record['booking_date']]]">
+                        <input type="hidden" id="cancel_time" name="cancel_time" value="[[=head_record.get('cancel_time')]]">                        
+                        <input type="hidden" id="cancel_date" name="cancel_date" value="[[=head_record.get('cancel_date')]]">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-primary">
+                        <i class="fa-regular fa-floppy-disk"></i> <span class="ms-2">Confirm</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+    [[end]]
+
+
+
+
+
+
+
+
+
+[[block scripts]]
+<script>
+
+   
+    $(document).ready(function () {
+        $('#confirmButton').click(function () {
+    var bookingId = $(this).data('booking-id');
+    var button = $(this);
+    button.prop('disabled', true);
+    $.ajax({
+        url: '[[=URL("default", "confirm_booking")]]',
+        type: 'POST',
+        data: {
+            booking_id: bookingId
+        },
+        success: function (response) {
+            if (response.status === 'success') {
+                button.html('<i class="fa-regular fa-check-circle"></i> <span class="ms-2">Confirmed</span>');
+                button.removeClass('btn-primary').addClass('btn-success');
+                button.prop('disabled', true); 
+                location.reload();
+            } else {
+                alert('Confirmation failed. Please try again.');
+                button.prop('disabled', false);
+            }
+        },
+        error: function () {
+            alert('Error in confirming booking.');
+            button.prop('disabled', false);
+        }
+    });
+    });
+    
+    if ($('#confirmButton').data('value') == 1) {
+    $('#confirmButton').hide();  
+    }
+
+
+
+
+
+        $('#holdButton').click(function () {
+    var bookingId = $(this).data('booking-id');
+    var button = $(this);
+    button.prop('disabled', true);
+    $.ajax({
+        url: '[[=URL("default", "hold_booking")]]',
+        type: 'POST',
+        data: {
+            booking_id: bookingId
+        },
+        success: function (response) {
+            if (response.status === 'success') {
+                button.html('<i class="fa-regular fa-pause-circle"></i> <span class="ms-2">Holded</span>');
+                button.removeClass('btn-primary').addClass('btn-success');
+                button.prop('disabled', true); 
+                location.reload();
+            } else {
+                alert('Hold failed. Please try again.');
+                button.prop('disabled', false);
+            }
+        },
+        error: function () {
+            alert('Error in Hold booking.');
+            button.prop('disabled', false);
+        }
+    });
+    });
+    
+    if ($('#holdButton').data('value') == 1) {
+    $('#holdButton').hide();  
+    }
+    
+       
+
+
+ // Start Grid Layout
+        var currentPageId ="[[=head_record['id']]]";
+        var BookingID ="[[=head_record['booking_id']]]";
+
+    
+
+        const $gridContainer = $('#grid-container');
+        const $columnsInput = $('#col');
+        const $inchesInput = $('#inch');
+
+        const totalColumns = 16;
+        const totalInches = 20.5;
+        const totalRows = Math.ceil(totalInches * 2);
+
+        let isDragging = false;
+        let startCol = 0;
+        let startRow = 0;
+        let startMouseX, startMouseY;
+
+        function createGrid() {
+            for (let i = 0; i < totalRows * totalColumns; i++) {
+                const rowIndex = Math.floor(i / totalColumns);
+                const colIndex = i % totalColumns;
+
+                const $gridItem = $('<div>', { class: 'grid-item' });
+
+                if (rowIndex % 2 === 0) {
+                    $gridItem.addClass('solid');
+                } else {
+                    $gridItem.addClass('dotted');
+                }
+
+                if (colIndex % 2 === 0) {
+                    $gridItem.addClass('col-solid');
+                } else {
+                    $gridItem.addClass('col-dotted');
+                }
+
+                $gridItem.appendTo($gridContainer);
+            }
+        }
+
+        function renderArea(col, row, width, height) {
+            $gridContainer.find('.grid-item').removeClass('selected');
+            $gridContainer.find('.selection-overlay').remove();
+
+            const cellWidth = $gridContainer.width() / totalColumns;
+            const cellHeight = $('.grid-item').first().outerHeight(true);
+            const areaWidth = width * 2 * cellWidth;
+            const areaHeight = height * cellHeight;
+            const left = col * 2 * cellWidth;
+            const top = row * cellHeight;
+
+            $('<div>', {
+                class: `selection-overlay`,
+                text: `${BookingID} (${width} x ${height / 2})`,
+                css: { width: areaWidth, height: areaHeight, left, top }
+            }).appendTo($gridContainer);
+
+            for (let i = 0; i < height; i++) {
+                for (let j = 0; j < width * 2; j++) {
+                    const gridIndex = (row + i) * totalColumns + (col * 2 + j);
+                    $('.grid-item').eq(gridIndex).addClass('selected');
+                }
+            }
+        }
+
+        function updateGrid() {
+            const selectedColumns = Math.min(Math.max(0, Math.round(parseFloat($columnsInput.val()) * 2) / 2 || 0), 8);
+            const selectedInches = Math.min(Math.max(0, Math.round(parseFloat($inchesInput.val()) * 2) / 2 || 0), totalInches);
+            const selectedRows = Math.ceil(selectedInches * 2);
+
+            renderArea(startCol, startRow, selectedColumns, selectedRows);
+        }
+
+        function onDragStart(e) {
+            const $target = $(e.target);
+            if ($target.hasClass('selection-overlay')) {
+                isDragging = true;
+                const rect = $gridContainer[0].getBoundingClientRect();
+                const cellWidth = rect.width / totalColumns;
+                const cellHeight = rect.height / totalRows;
+
+                startMouseX = e.clientX;
+                startMouseY = e.clientY;
+
+                $(document).on('mousemove', onDrag);
+                $(document).on('mouseup', onDragEnd);
+            }
+        }
+
+        function onDrag(e) {
+            if (!isDragging) return;
+
+            const rect = $gridContainer[0].getBoundingClientRect();
+            const cellWidth = rect.width / totalColumns;
+            const cellHeight = rect.height / totalRows;
+
+            const dx = Math.floor((e.clientX - startMouseX) / cellWidth);
+            const dy = Math.floor((e.clientY - startMouseY) / cellHeight);
+
+            const newCol = Math.max(0, Math.min(startCol + dx / 2, totalColumns / 2 - parseFloat($columnsInput.val())));
+            const newRow = Math.max(0, Math.min(startRow + dy, totalRows - Math.ceil(parseFloat($inchesInput.val()) * 2)));
+
+            renderArea(newCol, newRow, parseFloat($columnsInput.val()), Math.ceil(parseFloat($inchesInput.val()) * 2));
+        }
+
+        function onDragEnd() {
+            isDragging = false;
+            $(document).off('mousemove', onDrag);
+            $(document).off('mouseup', onDragEnd);
+
+            // Update the position after drag
+            const rect = $gridContainer[0].getBoundingClientRect();
+            const cellWidth = rect.width / totalColumns;
+            const cellHeight = rect.height / totalRows;
+
+            const dx = Math.floor((event.clientX - startMouseX) / cellWidth);
+            const dy = Math.floor((event.clientY - startMouseY) / cellHeight);
+
+            startCol = Math.max(0, Math.min(startCol + dx / 2, totalColumns / 2 - parseFloat($columnsInput.val())));
+            startRow = Math.max(0, Math.min(startRow + dy, totalRows - Math.ceil(parseFloat($inchesInput.val()) * 2)));
+        }
+        
+        $columnsInput.on('input', updateGrid);
+        $inchesInput.on('input', updateGrid);
+        $gridContainer.on('mousedown', onDragStart);
+        
+        createGrid();
+        updateGrid();
+        
+        // End Grid Layout
+        
+        // multiselect dropdown
+        $('#mySelect').select2({
+            placeholder: "Select an option"
+        });
+
+        $('#mySelect').on('change', function () {
+            if ($(this).find('option:selected').length > 0) {
+                $(this).attr('placeholder', '');
+            } else {
+                $(this).attr('placeholder', 'Select option');
+            }
+        });
+                
+        const vatValue = parseFloat($('#vat').val());
+            
+            if (vatValue === 15) {
+               $('#vat_input').prop('checked', true);
+           } else {
+           $('#vat_input').prop('checked', false);
+                $('#vat').val(0);
+            }   
+    
+           // Ensure VAT input is always readonly instead of disabled
+           $('#vat').prop('readonly', true);
+           // Event listener for checkbox change
+           $('#vat_input').change(function() {
+               if (!this.checked) {
+               $('#vat').val(0);
+                   } else {
+                   $('#vat').val(15); 
+            }
+           });
+
+        const fixedRateValue = parseFloat($('#fixed_rate').val());
+        if (fixedRateValue > 0) {
+            $('#fixed_rate_input').prop('checked', true);
+            $('#fixed_rate').prop('disabled', false);
+        } else {
+            $('#fixed_rate_input').prop('checked', false);
+            $('#fixed_rate').val(0);
+            $('#fixed_rate').prop('disabled', true);
+        }
+            $('#fixed_rate_input').change(function() {
+            if (!this.checked) {
+                $('#fixed_rate').val(0);
+            }
+                 $('#fixed_rate').prop('disabled', !this.checked);
+                });
+
+            const specificValue = parseFloat($('#specific').val());
+        if (specificValue > 0) {
+            $('#specific_input').prop('checked', true);
+            $('#specific').prop('disabled', false);
+        } else {
+            $('#specific_input').prop('checked', false);
+            $('#specific').val(0);
+            $('#specific').prop('disabled', true);
+        }
+            $('#specific_input').change(function() {
+            if (!this.checked) {
+                $('#specific').val(0);
+            }
+                 $('#specific').prop('disabled', !this.checked);
+                });
+
+            const boxValue = parseFloat($('#box').val());
+        if (boxValue > 0) {
+            $('#box_input').prop('checked', true);
+            $('#box').prop('disabled', false);
+        } else {
+            $('#box_input').prop('checked', false);
+            $('#box').val(0);
+            $('#box').prop('disabled', true);
+        }
+            $('#box_input').change(function() {
+            if (!this.checked) {
+                $('#box').val(0);
+            }
+                 $('#box').prop('disabled', !this.checked);
+                 
+                });                
+              // get news supplement
+        var selectedValue = $('#news_supplement').val();
+        $.ajax({
+            url: '[[=URL("default", "get_page_type")]]',
+            method: 'GET',
+            data: { news_supplement: selectedValue },
+            dataType: 'json',
+            success: function (data) {
+                var pageTypeDropdown = $('#page_type'); 
+                pageTypeDropdown.empty();
+                data.results.forEach(function (item) {
+                    pageTypeDropdown.append($('<option>', {
+                        value: item.page_type,
+                        text: item.page_type,
+                        selected: item.page_type === "[[=head_record['page_type']]]"
+                    }));
+                });
+            },
+        });
+
+
+          
+        var selectedValue = $("#page_type_hidden").val();
+        console.log(selectedValue)
+        $.ajax({
+            url: '[[=URL("default", "get_page_name")]]',
+            method: 'GET',
+            data: { page_type: selectedValue },
+            dataType: 'json',
+            success: function (data) {
+                var pageTypeDropdown = $('#page_name'); 
+                pageTypeDropdown.empty();
+                data.results.forEach(function (item) {
+                    pageTypeDropdown.append($('<option>', {
+                        value: item.assign_page,
+                        text: item.assign_page,
+                        selected: item.assign_page === "[[=head_record['page_name']]]"
+                    }));
+                });
+            },
+        });
+
+
+                var selectedValue = $("#advertiser_hidden").val();
+                $.ajax({
+                    url: '[[=URL("default", "get_advertiser")]]',
+                    method: 'GET',
+                    data: { brand: selectedValue },
+                    dataType: 'json',
+                    success: function (data) {
+                        var advertiserDropdown = $('#advertiser');
+                        advertiserDropdown.empty();
+
+                        if (data.results.length > 0) {
+                            data.results.forEach(function (item) {
+                                advertiserDropdown.append($('<option>', {
+                                    value: item.advertiser,
+                                    text: item.advertiser
+                                }));
+                            });
+                        } else {
+                            advertiserDropdown.append($('<option>', { text: 'No pages available', value: '' }));
+                        }
+                    },
+                    error: function () {
+                        alert('Error loading advertiser');
+                    }
+                });
+
+    
+           
+                 // Handle Adv. Sector change event to load advertiser
+          
+                 var selectedValue2 = $("#advertiser_hidden").val();
+                if (!selectedValue2) return; // Exit if no value is selected
+                $.ajax({
+                    url: '[[=URL("default", "get_adv_sector")]]',
+                    method: 'GET',
+                    data: { advertiser: selectedValue2 },
+                    dataType: 'json',
+                    success: function (data) {
+                        var advertiserDropdown = $('#adv_sector');
+                        advertiserDropdown.empty();
+
+                        if (data.results.length > 0) {
+                            data.results.forEach(function (item) {
+                                advertiserDropdown.append($('<option>', {
+                                    value: item.adv_sector,
+                                    text: item.adv_sector,
+                                    selected:item.adv_sector=== selectedValue
+                                }));
+                            });
+                        } else {
+                            advertiserDropdown.append($('<option>', { text: 'No pages available', value: '' }));
+                        }
+                    },
+                    error: function () {
+                        alert('Error loading adv_sector');
+                    }
+                });
+           
+
+        
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            });
+            // End ready function
+
+            $('#news_supplement').on('change', function (e) {
+                          var selectedValue = $(this).val();
+                          $.ajax({
+                              url: '[[=URL("default", "get_page_type")]]',
+                              method: 'GET',
+                              data: { news_supplement: selectedValue },
+                              dataType: 'json',
+                              success: function (data) {
+                                  var pageTypeDropdown = $('#page_type');
+                                  pageTypeDropdown.empty();
+            
+                                  if (data.results.length > 0) {
+                                      data.results.forEach(function (item) {
+                                          pageTypeDropdown.append($('<option>', {
+                                              value: item.page_type,
+                                              text: item.page_type
+                                          }));
+                                      });
+            
+                                   
+                                      pageTypeDropdown.val(data.results[0].page_type).trigger('change');
+                                  } else {
+                                      pageTypeDropdown.append($('<option>', { text: 'No page types available', value: '' }));
+                                      $('#page_name').empty();  
+                                  }
+                              },
+                              error: function () {
+                                  alert('Error loading page types');
+                              }
+                          });
+                      });
+           
+
+
+           
+            $('#page_type').on('change', function (e) {
+                var selectedValue = $(this).val();
+                if (!selectedValue) return; 
+
+                $.ajax({
+                    url: '[[=URL("default", "get_page_name")]]',
+                    method: 'GET',
+                    data: { page_type: selectedValue },
+                    dataType: 'json',
+                    success: function (data) {
+                        var pageNameDropdown = $('#page_name');
+                        pageNameDropdown.empty();
+
+                        if (data.results.length > 0) {
+                            data.results.forEach(function (item) {
+                                pageNameDropdown.append($('<option>', {
+                                    value: item.assign_page,
+                                    text: item.assign_page
+                                }));
+                            });
+                        } else {
+                            pageNameDropdown.append($('<option>', { text: 'No pages available', value: '' }));
+                        }
+                    },
+                    error: function () {
+                        alert('Error loading page names');
+                    }
+                });
+            });
+
+
+            
+            $('#brand').on('change', function (e) {
+                var selectedValue = $(this).val();
+                if (!selectedValue) return; 
+
+                $.ajax({
+                    url: '[[=URL("default", "get_advertiser")]]',
+                    method: 'GET',
+                    data: { brand: selectedValue },
+                    dataType: 'json',
+                    success: function (data) {
+                        var advertiserDropdown = $('#advertiser');
+                        advertiserDropdown.empty();
+
+                        if (data.results.length > 0) {
+                            data.results.forEach(function (item) {
+                                advertiserDropdown.append($('<option>', {
+                                    value: item.advertiser,
+                                    text: item.advertiser
+                                }));
+                            });
+                        } else {
+                            advertiserDropdown.append($('<option>', { text: 'No pages available', value: '' }));
+                        }
+                    },
+                    error: function () {
+                        alert('Error loading advertiser');
+                    }
+                });
+            });
+
+    
+            $('#brand').on('change', function (e) {
+                var selectedValue = $(this).val();
+                if (!selectedValue) return;
+
+                $.ajax({
+                    url: '[[=URL("default", "get_adv_sector")]]',
+                    method: 'GET',
+                    data: { advertiser: selectedValue },
+                    dataType: 'json',
+                    success: function (data) {
+                        var advertiserDropdown = $('#adv_sector');
+                        advertiserDropdown.empty();
+
+                        if (data.results.length > 0) {
+                            data.results.forEach(function (item) {
+                                advertiserDropdown.append($('<option>', {
+                                    value: item.adv_sector,
+                                    text: item.adv_sector
+                                }));
+                            });
+                        } else {
+                            advertiserDropdown.append($('<option>', { text: 'No pages available', value: '' }));
+                        }
+                    },
+                    error: function () {
+                        alert('Error loading adv_sector2');
+                    }
+                });
+            });
+
+ 
+
+        
+     
+
+</script>
+
+[[end]]

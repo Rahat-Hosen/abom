@@ -1,0 +1,207 @@
+[[extend 'layout.html']]
+
+[[block header]]
+[[icon='fa fa-chart-line']]
+[[breadcamp = 'Book Page']]
+[[end]]
+
+
+[[block content]]
+<style>
+      .layout.fixed-sidebar .sidebar~.layout {
+        overflow: hidden;
+    }
+</style>
+<div class="container-section">
+    <div class="d-flex justify-content-between align-items-center">
+
+        <span class="icon-text icon-text-bold">
+            <i class="fa-solid fa-table-list"></i>
+            <span>Table</span>
+        </span>
+        <div class="d-flex justify-content-end">
+            <div class="p-1">
+                <button type="button" class="btn btn-sm btn-light">
+                    <i class="fa-solid fa-filter"></i> <span class="ms-2">Filter</span>
+                </button>
+            </div>
+            <div class="p-1">
+                <div class="btn-group">
+                    <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        Action
+                    </button>
+                    <!-- <ul class="dropdown-menu"> -->
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <!--<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#staticBackdrop"><i class="fas fa-add me-1"></i> Add</a>-->
+                        <a class="dropdown-item" href="[[=URL('book_page/create')]]"><i class="fas fa-add me-1"></i>
+                            Add</a>
+                        <a class="dropdown-item" href="#"><i class="fas fa-cog me-1"></i> Import</a>
+                        <a class="dropdown-item" href="#"><i class="fas fa-cog me-1"></i> Export</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-1"></i> Logout</a>
+                    </div>
+                    <!-- </ul> -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered compact hover" style="width:100%" id="myTable">
+            <thead>
+        
+            </thead>
+            <tbody>
+                
+            </tbody>
+    
+        </table>
+    </div>
+
+</div>
+[[end]]
+[[block scripts]]
+<!-- individual pages can add scripts here -->
+
+
+
+<script>
+    $(document).ready(function() {
+        var table = $('#myTable').DataTable({
+            dom: "Bfrt<'d-flex justify-content-between'<l><i><p>>",
+            ajax: {
+                async: true,
+                type: 'GET',
+                url: '[[=URL("book_page","get_data")]]',
+                data: function (d) {
+                    d.page = d.start / d.length + 1;
+                    d.rows_per_page = d.length;
+                    d.orderColumn = d.order[0].id
+                    d.orderDirection = d.order[0].dir
+                },
+                dataSrc: 'data'
+            },
+            order: [0, 'desc'],
+            serverSide: true,
+            lengthMenu: [
+                [15, 50, 100, -1],
+                [15, 50, 100, 'All']
+            ],
+            searching: false,
+            scrollY: '400px',  // Set the height for vertical scrolling
+            scrollCollapse: true,
+            columns: [
+                { title: 'Booking Id', data: 'booking_id' },
+                {
+                    title: 'State',
+                    data: 'status',
+                    class: 'min-w-125px',
+                    render: function (data, type, row) {
+                        var badgeColor = '';
+                        var status = '';
+
+                        if (row.booking_cancel_status == 1) {
+                            status = 'Canceled';
+                            badgeColor = 'bg-danger';
+                        } else if (row.confirm == 1) {
+                            status = 'Confirmed';
+                            badgeColor = 'bg-success';
+                        } else if (row.hold == 1) {
+                            status = 'Hold';
+                            badgeColor = 'bg-warning';
+                        } else {
+                            status = 'Entered';
+                            badgeColor = 'bg-primary';
+                        }
+
+                        return `<div class='badge ${badgeColor}'>${status}</div>`;
+                    }
+                }
+                ,
+                { title: 'Booking Date', data: 'booking_date' },
+                { title: 'Publish Date', data: 'publish_date' },
+                { title: 'News/ Supplement', data: 'news_supplement' },
+                { title: 'Page Type', data: 'page_type' },
+                { title: 'Page Name', data: 'page_name' },
+                { title: 'Brand', data: 'brand' },
+                { title: 'Advertiser', data: 'advertiser' },
+                { title: 'Adv. Sector', data: 'adv_sector' },
+                { title: 'Customer Type', data: 'customer_type' },
+                { title: 'Reference', data: 'reference' },
+                { title: 'Title', data: 'title' },
+                { title: 'Payment Type', data: 'payment_type' },
+                { title: 'Color Type', data: 'color_type' },
+                { title: 'Rate', data: 'rate' },
+                { title: 'Column', data: 'col' },
+                { title: 'Inch', data: 'inch' },
+                { title: 'Sub Total', data: 'subtotal' },
+                { title: 'discount (%)', data: 'discount_percentage' },
+                { title: 'discount Amount', data: 'discount_amount' },
+                { title: 'Vat', data: 'vat' },
+                { title: 'Specific', data: 'specific' },
+                { title: 'Box', data: 'box' },
+                { title: 'Net Total', data: 'net_total' },
+                { title: 'Additional Charge', data: 'additional_charge' },
+                { title: 'Fixed Rate', data: 'fixed_rate' },
+                { title: 'ID', data: 'id' },
+                { title: 'Region', data: 'region' },
+                { title: 'Confused Field', data: 'confused_field' },
+                { title: 'Confirm', data: 'confirm' },
+                { title: 'Hold', data: 'hold' },
+                {
+                    title: '',
+                    data: 'id',
+                    class: 'min-w-125px',
+                    render: function (data, type, row) {
+                        return `<a class="text-secondary mx-2" href="[[=URL('book_page/edit')]]?id=${data}"><i class="fas fa-eye"></i></a>`;
+                    }
+                },
+            ],
+            fixedColumns: {
+        start: 1,
+        end: 1
+    },
+        });
+
+        // Array to track the ids of the details displayed rows
+        const detailRows = [];
+        
+        table.on('click', 'tbody td.dt-control', function () {
+            let tr = event.target.closest('tr');
+            let row = table.row(tr);
+            let idx = detailRows.indexOf(tr.id);
+        
+            if (row.child.isShown()) {
+                tr.classList.remove('details');
+                row.child.hide();
+        
+                // Remove from the 'open' array
+                detailRows.splice(idx, 1);
+            }
+            else {
+                tr.classList.add('details');
+                row.child(format(row.data())).show();
+        
+                // Add to the 'open' array
+                if (idx === -1) {
+                    detailRows.push(tr.id);
+                }
+            }
+        });
+        
+        // On each draw, loop over the `detailRows` array and show any child rows
+        table.on('draw', () => {
+            detailRows.forEach((id, i) => {
+                let el = document.querySelector('#' + id + ' td.dt-control');
+        
+                if (el) {
+                    el.dispatchEvent(new Event('click', { bubbles: true }));
+                }
+            });
+        });
+    });
+</script>
+
+
+[[end]]

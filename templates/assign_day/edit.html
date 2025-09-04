@@ -1,0 +1,272 @@
+[[extend 'layout.html']]
+
+[[block header]]
+[[icon='fa fa-chart-line']]
+[[breadcamp = 'Assign Day']]
+[[end]]
+
+
+[[block content]]
+<style>
+    .disabled {
+        pointer-events: none;
+        opacity: 0.5;
+    }
+    
+</style>
+<div class="container-section">
+    <div class="d-flex justify-content-between align-items-center border-bottom">
+        <span class="icon-text icon-text-bold">
+            <i class="fa-solid fa-plus"></i>
+            <span>Edit</span>
+        </span>
+
+        <div class="d-flex justify-content-end">
+            <div class="p-1">
+                <button type="button" class="btn btn-sm btn-light d-none" id="btn_view">
+                    <i class="fa-regular fa-eye"></i> <span class="ms-2">View</span>
+                </button>
+                <button type="button" class="btn btn-sm btn-light" id="btn_edit">
+                    <i class="fa-regular fa-pen-to-square"></i> <span class="ms-2">Edit</span>
+                </button>
+            </div>
+            <div class="p-1">
+                <a href="[[=URL('assign_day/index')]]" class="btn btn-sm btn-light">
+                    <i class="fa-solid fa-arrow-left"></i> <span class="ms-2">Back</span>
+                </a>
+            </div>
+            <div class="p-1">
+                <div class="btn-group">
+                    <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        Action
+                    </button>
+                    <!-- <ul class="dropdown-menu"> -->
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <!--<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#staticBackdrop"><i class="fas fa-add me-1"></i> Add</a>-->
+                        <a class="dropdown-item" href="delete?id=[[=request.query.get('id')]]" id="delete_btn">
+                            <i class="fa-solid fa-trash-can"></i><span class="ms-2">Delete</span></a>
+                    </div>
+                    <!-- </ul> -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container py-2">
+
+        [[= form.custom.begin ]]
+        <div id="custom_form">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3 custom_input">
+                        <label for="news_supplement" class="form-label">News Supplement</label>
+                        [[= form.custom.widgets['news_supplement'] ]]
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3 custom_input">
+                        <label for="company" class="form-label">Company</label>
+                        [[= form.custom.widgets['company'] ]]
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3 custom_input">
+                        <label for="segment" class="form-label">Segment</label>
+                        [[= form.custom.widgets['segment'] ]]
+                    </div>
+                </div>
+                <div class="container mt-3">
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill"
+                                        data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home"
+                                        aria-selected="true">Day Wise
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill"
+                                        data-bs-target="#pills-profile" type="button" role="tab"
+                                        aria-controls="pills-profile" aria-selected="false">Date Wise
+                                    </button>
+                                    <input type="hidden" id="date_wise" name="date_wise" value="0">
+                                </li>
+                            </ul>
+                            <div class="tab-content" id="pills-tabContent">
+                                <div class="tab-pane fade show active" id="pills-home" role="tabpanel"
+                                    aria-labelledby="pills-home-tab">
+                                    <div class="list-group d-flex flex-row">
+                                        <label class="list-group-item me-2" for="sat">
+                                            <input class="form-check-input me-1 day-checkbox" type="checkbox" value="1"
+                                                id="sat" name="sat" disabled [[if record.sat==1:]] checked [[pass]]>
+                                            Sat
+                                        </label>
+                                        <label class="list-group-item me-2" for="sun">
+                                            <input class="form-check-input me-1 day-checkbox" type="checkbox" value="1"
+                                                id="sun" name="sun" disabled
+                                                [[if record.sun==1:]] checked [[pass]]>
+                                            Sun
+                                        </label>
+                                        <label class="list-group-item me-2" for="mon">
+                                            <input class="form-check-input me-1 day-checkbox" type="checkbox" value="1"
+                                                id="mon" name="mon" disabled
+                                                [[if record.mon==1:]] checked [[pass]]>
+                                            Mon
+                                        </label>
+                                        <label class="list-group-item me-2" for="tue">
+                                            <input class="form-check-input me-1 day-checkbox" type="checkbox" value="1"
+                                                id="tue" name="tue" disabled
+                                                [[if record.tue==1:]] checked [[pass]]>
+                                            Tue
+                                        </label>
+                                        <label class="list-group-item me-2" for="wed">
+                                            <input class="form-check-input me-1 day-checkbox" type="checkbox" value="1"
+                                                id="wed" name="wed" disabled
+                                                [[if record.wed==1:]] checked [[pass]]>
+                                            Wed
+                                        </label>
+                                        <label class="list-group-item me-2" for="thu">
+                                            <input class="form-check-input me-1 day-checkbox" type="checkbox" value="1"
+                                                id="thu" name="thu" disabled
+                                                [[if record.thu==1:]] checked [[pass]]>
+                                            Thu
+                                        </label>
+                                        <label class="list-group-item me-2" for="fri">
+                                            <input class="form-check-input me-1 day-checkbox" type="checkbox" value="1"
+                                                id="fri" name="fri" disabled
+                                                [[if record.fri==1:]] checked [[pass]]>
+                                            Fri
+                                        </label>
+                                    </div>
+                                    <input type="hidden" id="day_wise" name="day_wise" value="0">
+                                </div>
+                                <div class="tab-pane fade" id="pills-profile" role="tabpanel"
+                                    aria-labelledby="pills-profile-tab">
+                                    <div class="col-md-3  custom_input" >
+                                        <div class="mb-3">
+                                            <input type="date" id="date_on" name="date_on" class="form-control" value="[[=record.date_on]]">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="mb-3 ">
+                        <label for="status" class="form-label">Status</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="1" id="status" name="status" disabled
+                                [[if record.status==1:]] checked [[pass]]>
+                            <label class="form-check-label" for="status">
+                                Active
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="row d-none" id="edit_view_section">
+                <div class="col-12">
+                    <div class="d-flex justify-content-start">
+                        <div class="me-2">
+                            <button type="submit" class="btn btn-sm btn-primary">
+                                <i class="fa-regular fa-floppy-disk"></i> <span class="ms-2">Update</span>
+                            </button>
+                        </div>
+                        <div class="">
+                            <button type="reset" class="btn btn-sm btn-light">
+                                <i class="fa-solid fa-retweet"></i> <span class="ms-2">Reset</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        [[= form.custom.end ]]
+    </div>
+
+</div>
+[[end]]
+[[block scripts]]
+<!-- individual pages can add scripts here -->
+<script>
+ document.addEventListener("DOMContentLoaded", function () {
+
+    const dayCheckboxes = document.querySelectorAll('.day-checkbox');
+    const dayWiseInput = document.getElementById('day_wise');
+    const dateOnInput = document.getElementById('date_on');
+    const dateWiseInput = document.getElementById('date_wise'); 
+
+    const dayWiseTab = document.getElementById('pills-home-tab');
+    const dateWiseTab = document.getElementById('pills-profile-tab');
+    const dayWisePane = document.getElementById('pills-home');
+    const dateWisePane = document.getElementById('pills-profile');
+
+    function freezeTabs() {
+      
+        if (Array.from(dayCheckboxes).some(cb => cb.checked)) {
+         
+            dateWiseTab.classList.add('disabled');
+            dateWiseTab.setAttribute('tabindex', '-1');
+            dateWiseTab.setAttribute('aria-disabled', 'true');
+            dayWiseInput.value = "1";
+            dateWiseInput.value = "0";  
+        } else {
+            
+            dateWiseTab.classList.remove('disabled');
+            dateWiseTab.removeAttribute('tabindex');
+            dateWiseTab.removeAttribute('aria-disabled');
+            dayWiseInput.value = "0";  
+        }
+
+      
+        if (dateOnInput.value) {
+          
+            dayWiseTab.classList.add('disabled');
+            dayWiseTab.setAttribute('tabindex', '-1');
+            dayWiseTab.setAttribute('aria-disabled', 'true');
+            dateWiseInput.value = "1";  
+            dayWiseInput.value = "0"; 
+        } else {
+            
+            dayWiseTab.classList.remove('disabled');
+            dayWiseTab.removeAttribute('tabindex');
+            dayWiseTab.removeAttribute('aria-disabled');
+            dateWiseInput.value = "0";  
+        }
+    }
+
+    dayCheckboxes.forEach(function (checkbox) {
+        checkbox.addEventListener('change', freezeTabs);
+    });
+
+    dateOnInput.addEventListener('change', freezeTabs);
+
+    // Function to set the correct tab as active based on initial values
+    function setInitialTab() {
+        if (dayWiseInput.value === "1") {
+            dayWiseTab.classList.add('active');
+            dayWisePane.classList.add('show', 'active');
+            dateWiseTab.classList.remove('active');
+            dateWisePane.classList.remove('show', 'active');
+        } else if (dateWiseInput.value === "1") {
+            dateWiseTab.classList.add('active');
+            dateWisePane.classList.add('show', 'active');
+            dayWiseTab.classList.remove('active');
+            dayWisePane.classList.remove('show', 'active');
+        }
+    }
+
+    // Run on page load to set initial state and tab
+    freezeTabs();
+    setInitialTab();
+
+});
+</script>
+
+
+[[end]]

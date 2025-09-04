@@ -1,0 +1,1020 @@
+[[extend 'layout.html']]
+
+[[block header]]
+[[icon='fa fa-chart-line']]
+[[breadcamp = 'Classified']]
+[[end]]
+
+[[block content]]
+<style>
+    .input-container {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin: 2px;
+        
+    }
+
+    .fill-box {
+        height: 390px;
+        width: 100%;
+        border-radius: 2%;
+        background-color: white;
+        position: relative;
+        border: 5px solid rgba(204, 201, 250);
+    }
+
+    .fill {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: rgb(181, 176, 248);
+        height: 0%;
+    }
+
+    .category-label {
+        position: absolute;
+        top: 5px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-weight: bold;
+        color: black;
+        z-index: 1;
+        visibility: hidden;
+    }
+</style>
+<div class="container-section">
+    <div class="d-flex justify-content-between align-items-center border-bottom">
+        <span class="icon-text icon-text-bold">
+            <i class="fa-solid fa-plus"></i>
+            <span>Create</span>
+        </span>
+
+        <div class="d-flex justify-content-end">
+            <div class="p-1">
+                <!--<button type="button" onclick="window.history.back()"  class="btn btn-sm btn-light">
+                    <i class="fa-solid fa-arrow-left"></i> <span class="ms-2">Back</span>
+                </button>-->
+                <a href="[[=URL('classified/index')]]" class="btn btn-sm btn-light">
+                    <i class="fa-solid fa-arrow-left"></i> <span class="ms-2">Back</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="container ">
+        <form action="[[=URL('classified','submit')]]" method="POST" id="classified_form">
+            <div id="custom_form">
+                <div class="row">
+                    <div class="col-md-8">
+                        <!-- start scrollable -->
+                        <div >
+                            <!-- Start Booking Information -->
+                            <span class="text-center fw-bold p-1 my-2 d-block rounded-1"
+                                style="color: #4f5762; background-color: var(--master-primary-light) !important;">Booking
+                                Information</span>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="booking_date" class="form-label">Booking Date</label>
+                                        <input type="date" id="booking_date" name="booking_date" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="publish_date" class="form-label">Publish Date</label>
+                                        <input type="date" id="publish_date" name="publish_date" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mt-4">
+                                        <button type="button" class="btn btn-primary"  style="width: -webkit-fill-available;" data-bs-toggle="offcanvas"
+                                            data-bs-target="#offcanvasWithBothOptions"
+                                            aria-controls="offcanvasWithBothOptions">
+                                            <i class="fa-regular fa-plus"></i> <span class="ms-2 multidatevalue">Add
+                                                Date [0 Day/s]</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="news_supplement" class="form-label">News Supplement</label>
+                                        <select class="select_custom form-control form-select-sm selectChange" id="news_supplement2"
+                                            name="news_supplement">
+                                            <option value="">Select News supplement</option>
+                                             [[ for row in alldays_items:]]
+                                            <option>[[=row.news_supplement]]</option>
+                                            [[pass]]
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="page_type" class="form-label"> Page Type</label>
+                                        <select class="select_custom form-control form-select-sm selectChange"
+                                            name="page_type" id="page_type2">
+                                            <option value="">Select Page Type</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="page_name" class="form-label"> Page Name</label>
+                                        <select class="select_custom form-control form-select-sm selectChange"
+                                            name="page_name" id="page_name2">
+                                            <option value="">Select Page Name</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="customer_id" class="form-label">Customer ID</label>
+                                        <select class="select_custom form-control form-select-sm selectChange"
+                                            name="customer_id">
+                                            <option value="">Select Customer Id</option>
+                                            [[ for row in customer_ids:]]
+                                            <option>[[=row.accpac_id]]</option>
+                                            [[pass]]
+                                        </select>
+
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="customer_name" class="form-label">Customer Name</label>
+                                        <select class="select_custom form-control form-select-sm selectChange"
+                                            name="customer_name">
+                                            <option value="">Select Customer Name</option>
+                                            [[ for row in customer_names:]]
+                                            <option>[[=row.name]]</option>
+                                            [[pass]]
+                                        </select>
+
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="customer_type" class="form-label">Customer Type</label>
+                                        <select class="select_custom form-control form-select-sm selectChange"
+                                            name="customer_type">
+                                            <option value="">Select Customer Type</option>
+                                            [[ for row in customer_types:]]
+                                            <option>[[=row.name]]</option>
+                                            [[pass]]
+                                        </select>
+
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="advertiser" class="form-label">Advertiser</label>
+                                        <select class="select_custom form-control form-select-sm selectChange"
+                                            name="advertiser">
+                                            <option value="">Select Advertiser</option>
+                                            [[ for row in advertiser:]]
+                                            <option>[[=row.advertiser]]</option>
+                                            [[pass]]
+                                        </select>
+
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="reference" class="form-label">Reference</label>
+                                        <input type="text" id="reference" name="reference" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="region" class="form-label">Region</label>
+                                        <select class="select_custom form-control form-select-sm selectChange"
+                                            name="region">
+                                            <option value="">Select Region Name</option>
+                                            [[ for row in utils_region:]]
+                                            <option>[[=row.name]]</option>
+                                            [[pass]]
+                                        </select>
+                                    </div>
+                                </div>
+
+                            </div>
+                           
+                            <!-- End Booking Information -->
+
+                            <!-- Start Pricing Information -->
+                            <span class="text-center fw-bold p-1 my-2 d-block rounded-1"
+                                style="color: #4f5762; background-color: var(--master-primary-light) !important;">Pricing
+                                Information
+                            </span>
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="classified_category" class="form-label">Category</label>
+                                        <select class="select_custom form-control form-select-sm selectChange"
+                                            id="classified_category" name="classified_category">
+                                            <option value="">Select Category Name</option>
+                                            [[ for row in classified_category:]]
+                                            <option>[[=row.category]]</option>
+                                            [[pass]]
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="mb-3">
+                                        <label for="word" class="form-label">Word</label>
+                                        <input type="text" id="word" name="word" class="form-control" >
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="mb-3">
+                                        <label for="unit_price" class="form-label">Rate</label>
+                                        <input type="text" id="unit_price" name="rate" class="form-control"  disabled>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="mb-3">
+                                        <label for="subtotal" class="form-label">Subtotal</label>
+                                        <input type="text" id="subtotal" name="subtotal" class="form-control" disabled>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="discount_percentage" class="form-label">Discount(%)</label>
+                                        <input type="text" id="discount_percentage" name="discount_percentage"
+                                            class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="mb-3">
+                                        <label for="discount_amount" class="form-label">Discount</label>
+                                        <input type="text" id="discount_amount" name="discount_amount"
+                                            class="form-control" disabled>
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="mb-3">
+                                        <label for="gross_total" class="form-label">Gross Total</label>
+                                        <input type="text" id="gross_total" name="gross_total" class="form-control" disabled>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+
+                                <div class="col-md-2">
+                                    <div class="mt-6">
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" id="box_input"
+                                                name="box_input">
+                                            <label class="form-check-label" for="box_input">Box</label>
+                                        </div>
+                                        <input type="text" id="box" name="box" class="form-control" disabled>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="mt-6">
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" id="top_input"
+                                                name="top_input">
+                                            <label class="form-check-label" for="top_input">Top</label>
+                                        </div>
+                                        <input type="text" id="top" name="top" class="form-control" disabled>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="mt-6">
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" id="palo_box_input"
+                                                name="palo_box_input">
+                                            <label class="form-check-label" for="palo_box_input">Palo Box</label>
+                                        </div>
+                                        <input type="text" id="palo_box" name="palo_box" class="form-control" disabled>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="mt-6">
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" id="bold_input"
+                                                name="bold_input">
+                                            <label class="form-check-label" for="bold_input">Bold</label>
+                                        </div>
+                                        <input type="text" id="bold" name="bold" class="form-control" disabled>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="mt-6">
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" id="reversed_input"
+                                                name="reversed_input">
+                                            <label class="form-check-label" for="reversed_input">Reversed</label>
+                                        </div>
+                                        <input type="text" id="reversed" name="reversed" class="form-control" disabled>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-2">
+                                    <div class="mb-3">
+                                        <label for="additional_charge" class="form-label">Add. Charge</label>
+                                        <input type="text" id="additional_charge" name="additional_charge"
+                                            class="form-control" disabled>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 pt-2">
+                                    <div class="mb-3">
+                                        <label for="net_total" class="form-label">Net Total</label>
+                                        <input type="text" id="net_total" name="net_total" class="form-control" disabled>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 pt-3">
+                                    <div class="mb-3">
+                                        <label for="status" class="form-label">Status</label>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="1" checked
+                                                id="status" name="status">
+                                            <label class="form-check-label" for="status">
+                                                Active
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                
+                            </div>
+                            <!-- End Pricing Information -->
+                        </div>
+                        <!-- end scrollable -->
+                    </div>
+                    <!-- Start News Grid Layout -->
+                    <div class="col-md-4">
+                        <span class="text-center fw-bold p-1 my-2 d-block rounded-1"
+                            style="color: #4f5762; background-color: var(--master-primary-light) !important;">
+                            Layout
+                        </span>
+
+                        <!-- Insert your interactive grid layout here -->
+                        <div class="input-container">
+                            <div class="fill-box" id="fill-box">
+                                <div class="fill" id="fill"></div>
+                                <span class="category-label" id="category-label"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End News Grid Layout -->
+            </div>
+    </div>
+
+
+</div>
+<!--  -->
+<br>
+<div class="row">
+    <div class="col-12" style="margin-left: 10px;">
+        <div class="d-flex justify-content-start">
+            <div class="me-2">
+                <button type="submit" class="btn btn-sm btn-secondary">
+                    <i class="fa-regular fa-floppy-disk"></i> <span class="ms-2">Add</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="text" hidden name="ad_multi">
+<br>
+<br>
+</div>
+<!--  -->
+</form>
+</div>
+
+</div>
+[[end]]
+<!--  drawer -->
+[[block drawer]]
+<div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions"
+    aria-labelledby="offcanvasWithBothOptionsLabel">
+    <div class="d-flex  justify-content-between align-items-center border-bottom">
+        <span class="icon-text icon-text-bold" style="margin-left: 10px;">
+            <i class="fa-solid fa-plus"></i>
+            <span>Create</span>
+        </span>
+
+        <div class="d-flex justify-content-end">
+            <div class="p-1">
+                <button type="button" class="btn btn-sm btn-light" data-bs-dismiss="offcanvas" aria-label="Close"></i>
+                    <i class="fa-solid fa-close" data-bs-dismiss="offcanvas" aria-label="Close"></i> <span
+                        class="ms-2">Close</span></button>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="offcanvas-body">
+        <div>
+            <div class="d-flex  justify-content-between align-items-center ">
+                <span class="enter fw-bold p-1 text-sm-center my-2 d-block rounded-1"
+                    style=" width: 780px; color:  #4f5762; background-color: var(--master-primary-light) !important;">Multiple
+                    Date Advertise [0 day/s]
+                </span>
+            </div>
+
+            <div class="row-container">
+                <!-- Your form row goes here (the one you've already created) -->
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label for="start_date" class="form-label">From Date</label>
+                            <input type="date" id="start_date" name="start_date[]" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label for="end_date" class="form-label">To Date</label>
+                            <input type="date" id="end_date" name="end_date[]" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="mb-3">
+                            <label for="news_supplement" class="form-label">Supplement</label>
+                            <select class="select_custom form-control" id="news_supplement" name="news_supplement[]">
+                                <option value="">Select</option>
+                                [[ for row in alldays_items:]]
+                                <option>[[=row.news_supplement]]</option>
+                                [[pass]]
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="mb-3">
+                            <label for="page_type" class="form-label">Page Type</label>
+                            <select class="select_custom form-control" id="page_type" name="page_type[]">
+                                <option value="">Select</option>
+                                [[ for row in page_type:]]
+                                <option>[[=row.name]]</option>
+                                [[pass]]
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="mb-3">
+                            <label for="page_name" class="form-label">Page Name</label>
+                            <select class="select_custom form-control" id="page_name" name="page_name[]">
+                                <option value="">Select</option>
+                                [[ for row in supplement_page:]]
+                                <option>[[=row.page_name]]</option>
+                                [[pass]]
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-customs ">
+                        <div class="mb-3">
+                            <button type="button" class="btn btn-primary " id="previewBtn">
+                                <i class="fa-regular fa-add"></i> <span class="ms-2">Add Queue</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-3 ">
+                        <div class="mb-3">
+                            <button type="button" class="btn btn-secondary " id="clearBtn">
+                                <i class="fa-regular fa-trash-can"></i> <span class="ms-2">Clear Data</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex  justify-content-between align-items-center ">
+                    <span class=" fw-bold p-1 text-sm-center my-2 d-block rounded-1"
+                        style=" width: 780px; color:  #4f5762; background-color: var(--master-primary-light) !important;">Preview
+                    </span>
+                </div>
+                <!-- Table to display the generated rows -->
+                <table class="table table-bordered mt-3" id="previewTable">
+                    <thead>
+                        <tr>
+                            <th>Publish Date</th>
+                            <th>News/ Supplement</th>
+                            <th>Page Type</th>
+                            <th>Page Name</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Dynamic rows will be inserted here -->
+                    </tbody>
+                </table>
+
+            </div>
+
+
+
+
+
+        </div>
+    </div>
+    [[end]]
+
+    [[block scripts]]
+    <!-- individual pages can add scripts here -->
+    <script>
+
+        // Box Layout
+        $(document).ready(function () {
+            $('#classified_category, #word').on('input change', function () {
+                const category = $('#classified_category option:selected').val();
+                const word = $('#word').val().trim();
+
+                if (category !== '' && word !== '') {
+                    const fillPercentage = Math.min(word, 100);
+                    $('#fill').css('height', fillPercentage + '%'); 
+                    $('#category-label').text(category).css('visibility', 'visible'); 
+                } else {
+                    $('#fill').css('height', '0%');
+                    $('#category-label').text('').css('visibility', 'hidden');
+                }
+            });
+            // End Box Layout
+
+            $('#box_input').change(function () {
+                $('#box').prop('disabled', !this.checked);
+            });
+            $('#box_input').change(function () {
+                $('#box').prop('disabled', !this.checked);
+            });
+            $('#box_input').change(function () {
+                $('#box').prop('disabled', !this.checked);
+            });
+            $('#box_input').change(function () {
+                $('#box').prop('disabled', !this.checked);
+            });
+            $('#top_input').change(function () {
+                $('#top').prop('disabled', !this.checked);
+            });
+            $('#palo_box_input').change(function () {
+                $('#palo_box').prop('disabled', !this.checked);
+            });
+            $('#bold_input').change(function () {
+                $('#bold').prop('disabled', !this.checked);
+            });
+            $('#reversed_input').change(function () {
+                $('#reversed').prop('disabled', !this.checked);
+            });
+
+            // multiselect dropdown
+            $('#mySelect').select2({
+                placeholder: "Select an option"
+            });
+            $('#mySelect').on('change', function () {
+                if ($(this).find('option:selected').length > 0) {
+                    $(this).attr('placeholder', '');
+                } else {
+                    $(this).attr('placeholder', 'Select option');
+                }
+            });
+            $('#fixed_rate_input').change(function () {
+                $('#fixed_rate').prop('disabled', !this.checked);
+            });
+            $('#box_input').change(function () {
+                $('#box').prop('disabled', !this.checked);
+            });
+            $('#specific_input').change(function () {
+                $('#specific').prop('disabled', !this.checked);
+            });
+            
+            // Ensure VAT input starts with the value of 15
+            $('#vat').val(15);
+
+
+            $('#box_input').change(function() {
+                if ($(this).is(':checked')) {
+                    $.ajax({
+                        url: '[[=URL("default", "get_box_rate_cls")]]',
+                        method: 'GET',
+                        success: function(response) {
+                            if (response.rate !== null) {
+                                $('#box').prop('disabled', true);
+                                $('#box').val(response.rate / 100); 
+                            } else {
+                                $('#box').prop('disabled', true);
+                                $('#box').val('');
+                            }
+                        },
+                        error: function() {
+                            alert('Error fetching rate.');
+                        }
+                    });
+                } else {
+                    $('#box').prop('disabled', true);
+                    $('#box').val(''); 
+                }
+            });
+            $('#top_input').change(function() {
+                if ($(this).is(':checked')) {
+                    $.ajax({
+                        url: '[[=URL("default", "get_top_rate_cls")]]',
+                        method: 'GET',
+                        success: function(response) {
+                            if (response.rate !== null) {
+                                $('#top').prop('disabled', true);
+                                $('#top').val(response.rate / 100); 
+                            } else {
+                                $('#top').prop('disabled', true);
+                                $('#top').val('');
+                            }
+                        },
+                        error: function() {
+                            alert('Error fetching rate.');
+                        }
+                    });
+                } else {
+                    $('#top').prop('disabled', true);
+                    $('#top').val(''); 
+                }
+            });
+            $('#bold_input').change(function() {
+                if ($(this).is(':checked')) {
+                    $.ajax({
+                        url: '[[=URL("default", "get_bold_rate_cls")]]',
+                        method: 'GET',
+                        success: function(response) {
+                            if (response.rate !== null) {
+                                $('#bold').prop('disabled', true);
+                                $('#bold').val(response.rate); 
+                            } else {
+                                $('#bold').prop('disabled', true);
+                                $('#bold').val('');
+                            }
+                        },
+                        error: function() {
+                            alert('Error fetching rate.');
+                        }
+                    });
+                } else {
+                    $('#bold').prop('disabled', true);
+                    $('#bold').val(''); 
+                }
+            });
+            $('#reversed_input').change(function() {
+                if ($(this).is(':checked')) {
+                    $.ajax({
+                        url: '[[=URL("default", "get_reversed_rate_cls")]]',
+                        method: 'GET',
+                        success: function(response) {
+                            if (response.rate !== null) {
+                                $('#reversed').prop('disabled', true);
+                                $('#reversed').val(response.rate); 
+                            } else {
+                                $('#reversed').prop('disabled', true);
+                                $('#reversed').val('');
+                            }
+                        },
+                        error: function() {
+                            alert('Error fetching rate.');
+                        }
+                    });
+                } else {
+                    $('#reversed').prop('disabled', true);
+                    $('#reversed').val(''); 
+                }
+            });
+            $('#palo_box_input').change(function() {
+                if ($(this).is(':checked')) {
+                    $.ajax({
+                        url: '[[=URL("default", "get_palo_box_rate_cls")]]',
+                        method: 'GET',
+                        success: function(response) {
+                            if (response.rate !== null) {
+                                $('#palo_box').prop('disabled', true);
+                                $('#palo_box').val(response.rate); 
+                            } else {
+                                $('#palo_box').prop('disabled', true);
+                                $('#palo_box').val('');
+                            }
+                        },
+                        error: function() {
+                            alert('Error fetching rate.');
+                        }
+                    });
+                } else {
+                    $('#palo_box').prop('disabled', true);
+                    $('#palo_box').val(''); 
+                }
+            });
+
+            // Handle category (news_supplement) change event
+            $('#news_supplement').on('change', function (e) {
+                var selectedValue = $(this).val();
+                $.ajax({
+                    url: '[[=URL("default", "get_page_type")]]',
+                    method: 'GET',
+                    data: { news_supplement: selectedValue },
+                    dataType: 'json',
+                    success: function (data) {
+                        var pageTypeDropdown = $('#page_type');
+                        pageTypeDropdown.empty();
+
+                        if (data.results.length > 0) {
+                            data.results.forEach(function (item) {
+                                pageTypeDropdown.append($('<option>', {
+                                    value: item.page_type,
+                                    text: item.page_type
+                                }));
+                            });
+
+                            // Automatically trigger the page_type change event for the first option
+                            pageTypeDropdown.val(data.results[0].page_type).trigger('change');
+                        } else {
+                            pageTypeDropdown.append($('<option>', { text: 'No page types available', value: '' }));
+                            $('#page_name').empty();  // Clear page_name if no page types
+                        }
+                    },
+                    error: function () {
+                        alert('Error loading page types');
+                    }
+                });
+            });
+
+            // Handle category2 (news_supplement2) change event
+            $('#news_supplement2').on('change', function (e) {
+                var selectedValue = $(this).val();
+                $.ajax({
+                    url: '[[=URL("default", "get_page_type")]]',
+                    method: 'GET',
+                    data: { news_supplement: selectedValue },
+                    dataType: 'json',
+                    success: function (data) {
+                        var pageTypeDropdown = $('#page_type2');
+                        pageTypeDropdown.empty();
+                        if (data.results.length > 0) {
+                            data.results.forEach(function (item) {
+                                pageTypeDropdown.append($('<option>', {
+                                    value: item.page_type,
+                                    text: item.page_type
+                                }));
+                            });
+
+                            // Automatically trigger the page_type change event for the first option
+                            pageTypeDropdown.val(data.results[0].page_type).trigger('change');
+                        } else {
+                            pageTypeDropdown.append($('<option>', { text: 'No page types available', value: '' }));
+                            $('#page_name2').empty();  // Clear page_name if no page types
+                        }
+                    },
+                    error: function () {
+                        alert('Error loading page types');
+                    }
+                });
+            });
+
+            // Handle page_type change event to load page_name
+            $('#page_type').on('change', function (e) {
+                var selectedValue = $(this).val();
+                if (!selectedValue) return; // Exit if no value is selected
+
+                $.ajax({
+                    url: '[[=URL("default", "get_page_name")]]',
+                    method: 'GET',
+                    data: { page_type: selectedValue },
+                    dataType: 'json',
+                    success: function (data) {
+                        var pageNameDropdown = $('#page_name');
+                        pageNameDropdown.empty();
+
+                        if (data.results.length > 0) {
+                            data.results.forEach(function (item) {
+                                pageNameDropdown.append($('<option>', {
+                                    value: item.assign_page,
+                                    text: item.assign_page
+                                }));
+                            });
+                        } else {
+                            pageNameDropdown.append($('<option>', { text: 'No pages available', value: '' }));
+                        }
+                    },
+                    error: function () {
+                        alert('Error loading page names');
+                    }
+                });
+            });
+             // Handle page_type2 change event to load page_name
+             $('#page_type2').on('change', function (e) {
+                var selectedValue = $(this).val();
+                if (!selectedValue) return; // Exit if no value is selected
+
+                $.ajax({
+                    url: '[[=URL("default", "get_page_name")]]',
+                    method: 'GET',
+                    data: { page_type: selectedValue },
+                    dataType: 'json',
+                    success: function (data) {
+                        var pageNameDropdown = $('#page_name2');
+                        pageNameDropdown.empty();
+
+                        if (data.results.length > 0) {
+                            data.results.forEach(function (item) {
+                                pageNameDropdown.append($('<option>', {
+                                    value: item.assign_page,
+                                    text: item.assign_page
+                                }));
+                            });
+                        } else {
+                            pageNameDropdown.append($('<option>', { text: 'No pages available', value: '' }));
+                        }
+                    },
+                    error: function () {
+                        alert('Error loading page names');
+                    }
+                });
+            });
+        });
+
+
+        $('#word').on('keyup blur', function (e) {
+            var count_words = $(this).val();
+            var pricing_type = $('#news_supplement2').val(); 
+
+            $.ajax({
+                url: '[[=URL("default", "get_classified_price")]]',
+                method: 'GET',
+                data: {
+                    count_words: count_words,
+                    pricing_type: pricing_type,
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.unit_price) {
+                        // console.log(data.min_words)
+                        // console.log(data.additional_pricing)
+                        $('#unit_price').val(data.unit_price);
+                    } else {
+                        alert('Price not found');
+                    }
+                },
+                error: function () {
+                    alert('Error retrieving price');
+                }
+            });
+        });
+
+
+
+
+
+        // Start Multi Ad Date
+        $('#previewBtn').on('click', function () {
+            // Get the values from the input fields
+            var startDate = new Date($('#start_date').val());
+            var endDate = new Date($('#end_date').val());
+            var newsSupplement = $('#news_supplement').val();
+            var pageType = $('#page_type').val();
+            var pageName = $('#page_name').val();
+
+            // Validate if dates are selected
+            if (!startDate || !endDate) {
+                alert("Please select both start and end dates.");
+                return;
+            }
+
+            // Check if start date is before or equal to end date
+            if (startDate > endDate) {
+                alert("Start date cannot be after the end date.");
+                return;
+            }
+
+            // Get the table body where rows will be inserted
+            var $tableBody = $('#previewTable tbody');
+
+            // Loop through each date between start and end dates (inclusive)
+            for (var d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+                // Format the date to YYYY-MM-DD
+                var formattedDate = d.toISOString().split('T')[0];
+
+                // Create a new row
+                var row = `
+                <tr>
+                    <td>${formattedDate}</td>
+                    <td>${newsSupplement || 'N/A'}</td>
+                    <td>${pageType || 'N/A'}</td>
+                    <td>${pageName || 'N/A'}</td>
+                    <td><button class="btn btn-secondary btn-sm deleteRowBtn">
+                         <i class="fa-regular fa-trash-can"></i> <span class="ms-2">Delete</span></button></td>
+                </tr>
+            `;
+                // Append the row to the table body
+                $tableBody.append(row);
+            }
+
+            // Optionally, clear the input fields after adding rows
+            $('#start_date').val('');
+            $('#end_date').val('');
+            $('#news_supplement').val('');
+            $('#page_type').val('');
+            $('#page_name').val('');
+            loadTotalDates()
+            // getPublishDateJson()
+        });
+
+        // Event delegation to handle delete button click
+        $('#previewTable tbody').on('click', '.deleteRowBtn', function () {
+            $(this).closest('tr').remove(); // Remove the clicked row
+            loadTotalDates()
+            // getPublishDateJson()
+        });
+
+
+        // Clear Data button click event
+        $('#clearBtn').on('click', function () {
+            $('#previewTable tbody').empty();
+            $('#start_date, #end_date').val('');
+            $('#news_supplement, #page_type, #page_name').val('').trigger("change");
+            $('#previewBtn').prop('disabled', true);
+            loadTotalDates()
+            // getPublishDateJson()
+        });
+
+        // End Multi Ad Date
+
+        // Date Count
+        function getPublishDateJson() {
+            // save json and render data on table
+            var formData = [];
+
+            // Loop through each row in the preview table
+            $('#previewTable tbody tr').each(function () {
+                var row = $(this);
+                var publish_date = row.find('td').eq(0).text(); // Get the date from the first cell
+                var newsSupplement = row.find('td').eq(1).text(); // Get the news supplement from the second cell
+                var pageType = row.find('td').eq(2).text(); // Get the page type from the third cell
+                var pageName = row.find('td').eq(3).text(); // Get the page name from the fourth cell
+
+                // Create a new object for each row
+                var rowData = {
+                    publish_date: publish_date,
+                    news_supplement: newsSupplement,
+                    page_type: pageType,
+                    page_name: pageName
+                };
+                // Add the row data to the formData array
+                formData.push(rowData);
+            });
+            var jsonString = JSON.stringify(formData);
+            $('input[name="ad_multi"]').val(jsonString);
+        }
+
+        function loadTotalDates() {
+            var totalDays = $('#previewTable tbody tr').length;
+
+ 
+
+            if (totalDays <= 0) {
+                $('.enter').text('Publish Date Advertise  [0 day]');
+            }
+            if (totalDays > 0) {
+                $('.enter').text(`Publish Date Advertise  [${totalDays} days]`);
+            }
+            if (totalDays <= 0) {
+                $('.multidatevalue').text('Add Date [0 day]');
+            }
+            if (totalDays > 0) {
+                $('.multidatevalue').text(`Add Date [${totalDays} days]`);
+            }
+
+        }
+
+        loadTotalDates();
+
+        // Function to validate all required fields
+        function validateForm() {
+            var isValid = true;
+            // Check if each required field has a value
+            $('#start_date, #end_date, #news_supplement, #page_type, #page_name').each(function () {
+                if ($(this).val() === "") {
+                    isValid = false;
+                }
+            });
+
+            // Enable or disable the preview button
+            $('#previewBtn').prop('disabled', !isValid);
+        }
+
+        // Call validateForm whenever an input field changes
+        $('#start_date, #end_date, #news_supplement, #page_type, #page_name').on('change input', function () {
+            validateForm();
+        });
+
+        $('#classified_form').on('submit', function (event) {
+            event.preventDefault();
+            getPublishDateJson()
+            $('#classified_form')[0].submit();
+        });
+
+
+    </script>
+
+    [[end]]

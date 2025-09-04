@@ -1,0 +1,199 @@
+[[extend 'layout.html']]
+
+[[block header]]
+[[icon='fa fa-chart-line']]
+[[breadcamp = 'Assign Page Type']]
+[[end]]
+
+[[block content]]
+<div class="container-section">
+    <div class="d-flex justify-content-between align-items-center border-bottom">
+        <span class="icon-text icon-text-bold">
+            <i class="fa-solid fa-plus"></i>
+            <span>Create</span>
+        </span>
+
+        <div class="d-flex justify-content-end">
+            <div class="p-1">
+                <a href="[[=URL('assign_page_type/index')]]" class="btn btn-sm btn-light">
+                    <i class="fa-solid fa-arrow-left"></i> <span class="ms-2">Back</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="container py-2">
+
+        [[= form.custom.begin ]]
+        <div id="custom_form">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="company" class="form-label">Company</label>
+                        [[= form.custom.widgets['company'] ]]
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="segment" class="form-label">Segment</label>
+                        [[= form.custom.widgets['segment'] ]]
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Category</label>
+                        [[= form.custom.widgets['category'] ]]
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="news_supplement" class="form-label">News/ Supplement</label>
+                        <select class="select_custom form-control" id="news_supplement" name="news_supplement">
+                            <option value="">Select</option>
+                        </select>
+                    </div>
+                </div>                
+
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="page_type" class="form-label">Page type</label>
+                        [[= form.custom.widgets['page_type'] ]]
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="color" class="form-label">Color</label>
+                        [[= form.custom.widgets['color'] ]]
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="assign_page" class="form-label">Assign Pages</label>
+                        <select class="select_custom form-control" id="assign_page" name="assign_page">
+                            <option value="">Select</option>
+                        </select>
+                    </div>
+                </div>
+
+
+
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="status" class="form-label">Status</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="1" checked id="status" name="status">
+                            <label class="form-check-label" for="status">
+                                Active
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="d-flex justify-content-start">
+                        <div class="me-2">
+                            <button type="submit" class="btn btn-sm btn-primary">
+                                <i class="fa-regular fa-floppy-disk"></i> <span class="ms-2">Save</span>
+                            </button>
+                        </div>
+                        <div class="">
+                            <button type="reset" class="btn btn-sm btn-light">
+                                <i class="fa-solid fa-retweet"></i> <span class="ms-2">Reset</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        [[= form.custom.end ]]
+    </div>
+</div>
+[[end]]
+[[block scripts]]
+<!-- individual pages can add scripts here -->
+<script>
+$(document).ready(function () {
+
+// Handle category change event to load supplements
+$('#assign_page_type_category').on('change', function (e) {
+    var selectedValue = $(this).val();
+    
+    $.ajax({
+        url: '[[=URL("default","get_news_supplement")]]', // Endpoint for getting supplements based on category
+        method: 'GET',
+        data: { category: selectedValue },
+        dataType: 'json',
+        success: function (data) {
+            var supplementDropdown = $('#news_supplement');
+            supplementDropdown.empty(); // Clear previous options
+
+            if (data.results.length > 0) {
+                data.results.forEach(function (item) {
+                    supplementDropdown.append($('<option>', {
+                        value: item.name,
+                        text: item.name
+                    }));
+                });
+
+                // Automatically select the first supplement and trigger change event
+                supplementDropdown.val(data.results[0].name).trigger('change');
+            } else {
+                supplementDropdown.append($('<option>', { text: 'No supplements available', value: '' }));
+                $('#assign_page').empty(); // Clear assign_page if no supplements are available
+            }
+        },
+        error: function () {
+            alert('Error loading supplements');
+        }
+    });
+});
+
+// Handle news_supplement change event to load assign_page
+$('#news_supplement').on('change', function (e) {
+    var selectedValue = $(this).val();
+
+    $.ajax({
+        url: '[[=URL("default", "get_supplement_page_name")]]', // Endpoint for getting pages based on supplement
+        method: 'GET',
+        data: { supplement: selectedValue },
+        dataType: 'json',
+        success: function (data) {
+            var pageNameDropdown = $('#assign_page');
+            pageNameDropdown.empty(); // Clear previous options
+
+            if (data.results.length > 0) {
+                data.results.forEach(function (item) {
+                    pageNameDropdown.append($('<option>', {
+                        value: item.page_name,
+                        text: item.page_name
+                    }));
+                });
+            } else {
+                pageNameDropdown.append($('<option>', { text: 'No pages available', value: '' }));
+            }
+        },
+        error: function () {
+            alert('Error loading page names');
+        }
+    });
+});
+
+// Initialize the multi-select for assign pages if needed
+let pageData = [];
+$('#callbacks').multiSelect({
+    afterSelect: function (values) {
+        pageData.push(...values);
+    },
+    afterDeselect: function (values) {
+        pageData = pageData.filter(value => !values.includes(value));
+    },
+    selectableHeader: "<div class='callbacks form-label'>All Pages</div>",
+    selectionHeader: "<div class='callbacks form-label'>Assign Pages</div>",
+});
+});
+
+</script>
+
+[[end]]
