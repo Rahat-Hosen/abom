@@ -1,0 +1,368 @@
+[[
+if len(request.path.split('/'))>2:
+_controller_name = request.path.split('/')[2]
+else:
+_controller_name = ''
+pass
+]]
+<aside id="sidebar" class="sidebar break-point-sm has-bg-image">
+  <a id="btn-collapse" class="sidebar-collapser"><i class="fa-solid fa-angle-left"></i></a>
+  <div class="image-wrapper">
+    <img src="#" alt="sidebar background" />
+  </div>
+  <div class="sidebar-layout">
+    <div class="sidebar-header">
+      <a href="[[=URL('dashboard','index')]]" style="color: inherit;">
+        <div class="pro-sidebar-logo">
+          <div style="background-color:inherit;">
+            <img src="[[=URL('static','abom_logo.png')]]" height="25" alt="surjo logo">
+          </div>
+          <h5>ABOM</h5>
+        </div>
+      </a>
+    </div>
+    <div class="sidebar-content">
+      <nav class="menu open-current-submenu">
+        <ul>
+          <li class="menu-header">
+            <span> Master Setup </span>
+          </li>
+          <li class="menu-item sub-menu [[if _controller_name in ['company','segment']:]]open[[pass]]">
+            <a href="#">
+              <span class="menu-icon">
+                <i class="fa-solid fa-building"></i>
+              </span>
+              <span class="menu-title">Company Setup</span>
+            </a>
+            <div class="sub-menu-list">
+              <ul>
+                <li class="menu-item  [[if _controller_name=='company':]]active_link[[pass]]">
+                  <a href="[[=URL('company/index')]]">
+                    <span class="menu-icon"><i class="fa-solid fa-warehouse"></i></span>
+                    <span class="menu-title">Company</span>
+                  </a>
+                </li>
+                <li class="menu-item [[if _controller_name=='segment':]]active_link[[pass]]">
+                  <a href="[[=URL('segment/index')]]">
+                    <span class="menu-icon"><i class="fas fa-ad"></i></span>
+                    <span class="menu-title">Segment</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </li>
+          <li class="menu-item sub-menu [[if _controller_name in ['category','news_supplement','assign_day']:]]open[[pass]]">
+            <a href="#">
+              <span class="menu-icon">
+                <i class="fa-solid fa-network-wired"></i>
+              </span>
+              <span class="menu-title">Category Setup</span>
+            </a>
+            <div class="sub-menu-list">
+              <ul>
+                <li class="menu-item [[if _controller_name=='category':]]active_link[[pass]]">
+                  <a href="[[=URL('category/index')]]">
+                    <span class="menu-icon"><i class="fa-solid fa-warehouse"></i></span>
+                    <span class="menu-title">Category</span>
+                  </a>
+                </li>
+          
+                <li class="menu-item [[if _controller_name=='news_supplement':]]active_link[[pass]]">
+                  <a href="[[=URL('news_supplement/index')]]">
+                    <span class="menu-icon"><i class="fas fa-ad"></i></span>
+                    <span class="menu-title">News/ Supplement</span>
+                  </a>
+                </li>
+          
+                <li class="menu-item [[if _controller_name=='assign_day':]]active_link[[pass]]">
+                  <a href="[[=URL('assign_day/index')]]">
+                    <span class="menu-icon"><i class="fas fa-ad"></i></span>
+                    <span class="menu-title">Assign Day</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </li>
+          <li class="menu-item sub-menu [[if _controller_name in ['page_type','assign_page_type','supplement_page']:]]open[[pass]]">
+            <a href="#">
+              <span class="menu-icon">
+                <i class="fa-solid fa-book"></i>
+              </span>
+              <span class="menu-title"> Page Setup</span>
+            </a>
+            <div class="sub-menu-list">
+              <ul>  
+                <li class="menu-item [[if _controller_name=='page_type':]]active_link[[pass]]">
+                  <a href="[[=URL('page_type/index')]]">
+                    <span class="menu-icon"><i class="fa-solid fa-warehouse"></i></span>
+                    <span class="menu-title">Page Type</span>
+                  </a>
+                </li>
+          
+                <li class="menu-item [[if _controller_name=='assign_page_type':]]active_link[[pass]]">
+                  <a href="[[=URL('assign_page_type/index')]]">
+                    <span class="menu-icon"><i class="fas fa-ad"></i></span>
+                    <span class="menu-title">Assign Page Type</span>
+                  </a>
+                </li>
+
+                <li class="menu-item [[if _controller_name=='supplement_page':]]active_link[[pass]]">
+                  <a href="[[=URL('supplement_page/index')]]">
+                    <span class="menu-icon"><i class="fas fa-ad"></i></span>
+                    <span class="menu-title">All Pages</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </li>
+          <li class="menu-item sub-menu [[if _controller_name in ['pricing','additional_pricing']:]]open[[pass]]">
+            <a href="#">
+              <span class="menu-icon">
+                <i class="fa-solid fa-money-bill-wave"></i>
+              </span>
+              <span class="menu-title">Pricing</span>
+            </a>
+            <div class="sub-menu-list">
+              <ul>
+                <li class="menu-item [[if _controller_name=='pricing':]]active_link[[pass]]">
+                  <a href="[[=URL('pricing/index')]]">
+                    <span class="menu-icon"><i class="fa-solid fa-warehouse"></i></span>
+                    <span class="menu-title">Pricing</span>
+                  </a>
+                </li>
+          
+                <li class="menu-item [[if _controller_name=='additional_pricing':]]active_link[[pass]]">
+                  <a href="[[=URL('additional_pricing/index')]]">
+                    <span class="menu-icon"><i class="fas fa-ad"></i></span>
+                    <span class="menu-title">Additional Pricing</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </li>
+          <li class="menu-item sub-menu [[if _controller_name in ['classified_category','classified_pricing']:]]open[[pass]]">
+            <a href="#">
+              <span class="menu-icon">
+                <i class="fa-solid fa-hamburger"></i>
+              </span>
+              <span class="menu-title"> Classified Setup</span>
+            </a>
+            <div class="sub-menu-list">
+              <ul>
+                <li class="menu-item [[if _controller_name=='classified_category':]]active_link[[pass]]">
+                  <a href="[[=URL('classified_category/index')]]">
+                    <span class="menu-icon"><i class="fa-solid fa-warehouse"></i></span>
+                    <span class="menu-title">Classified Category</span>
+                  </a>
+                </li>
+          
+                <li class="menu-item [[if _controller_name=='classified_pricing':]]active_link[[pass]]">
+                  <a href="[[=URL('classified_pricing/index')]]">
+                    <span class="menu-icon"><i class="fas fa-ad"></i></span>
+                    <span class="menu-title">Classified Pricing</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </li>
+          <li class="menu-item sub-menu [[if _controller_name in ['adv_sector','sub_adv_sector','advertiser','brand']:]]open[[pass]]">
+            <a href="#">
+              <span class="menu-icon">
+                <i class="fa-solid fa-pager"></i>
+              </span>
+              <span class="menu-title">Advertise Sector</span>
+            </a>
+            <div class="sub-menu-list">
+              <ul>     
+                <li class="menu-item [[if _controller_name=='adv_sector':]]active_link[[pass]]">
+                  <a href="[[=URL('adv_sector/index')]]">
+                    <span class="menu-icon"><i class="fa-solid fa-warehouse"></i></span>
+                    <span class="menu-title">Adv. Sector</span>
+                  </a>
+                </li>
+                <li class="menu-item [[if _controller_name=='sub_adv_sector':]]active_link[[pass]]">
+                  <a href="[[=URL('sub_adv_sector/index')]]">
+                    <span class="menu-icon"><i class="fas fa-ad"></i></span>
+                    <span class="menu-title">Sub. Adv. Sector</span>
+                  </a>
+                </li>
+
+                <li class="menu-item [[if _controller_name=='advertiser':]]active_link[[pass]]">
+                  <a href="[[=URL('advertiser/index')]]">
+                    <span class="menu-icon"><i class="fas fa-ad"></i></span>
+                    <span class="menu-title">Advertiser</span>
+                  </a>
+                </li>
+          
+                <li class="menu-item [[if _controller_name=='brand':]]active_link[[pass]]">
+                  <a href="[[=URL('brand/index')]]">
+                    <span class="menu-icon"><i class="fas fa-ad"></i></span>
+                    <span class="menu-title">Brand</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </li>
+          <li class="menu-item sub-menu [[if _controller_name in ['client','customer','customer_type']:]]open[[pass]]">
+            <a href="#">
+              <span class="menu-icon">
+                <i class="fa-solid fa-user"></i>
+              </span>
+              <span class="menu-title">Customer Setup</span>
+            </a>
+            <div class="sub-menu-list">
+              <ul>
+                <li class="menu-item [[if _controller_name=='client':]]active_link[[pass]]">
+                  <a href="[[=URL('client/index')]]">
+                    <span class="menu-icon"><i class="fa-solid fa-warehouse"></i></span>
+                    <span class="menu-title">Client</span>
+                  </a>
+                </li>  
+                <li class="menu-item [[if _controller_name=='customer':]]active_link[[pass]]">
+                  <a href="[[=URL('customer/index')]]">
+                    <span class="menu-icon"><i class="fa-solid fa-warehouse"></i></span>
+                    <span class="menu-title">Customer</span>
+                  </a>
+                </li>
+                <li class="menu-item [[if _controller_name=='customer_type':]]active_link[[pass]]">
+                  <a href="[[=URL('customer_type/index')]]">
+                    <span class="menu-icon"><i class="fas fa-ad"></i></span>
+                    <span class="menu-title">Customer Type</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </li>
+          <li class="menu-item sub-menu [[if _controller_name in ['receipt_mode','beneficiary_bank']:]]open[[pass]]">
+            <a href="#">
+              <span class="menu-icon">
+                <i class="fa-solid fa-bank"></i>
+              </span>
+              <span class="menu-title"> Bank Setup </span>
+            </a>
+            <div class="sub-menu-list">
+              <ul>
+                <li class="menu-item [[if _controller_name=='receipt_mode':]]active_link[[pass]]">
+                  <a href="[[=URL('receipt_mode/index')]]">
+                    <span class="menu-icon"><i class="fas fa-ad"></i></span>
+                    <span class="menu-title">Receipt Mode</span>
+                  </a>
+                </li>
+          
+                <li class="menu-item [[if _controller_name=='beneficiary_bank':]]active_link[[pass]]">
+                  <a href="[[=URL('beneficiary_bank/index')]]">
+                    <span class="menu-icon"><i class="fa-solid fa-warehouse"></i></span>
+                    <span class="menu-title">Customer Bank</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </li>
+          <li class="menu-item">
+            <div class="sub-menu-list">
+              <ul>
+                <li class="menu-item [[if _controller_name=='cause_cancel':]]active_link[[pass]]">
+                  <a href="[[=URL('cause_cancel/index')]]">
+                    <span class="menu-icon"><i class="fa-solid fa-cancel"></i></span>
+                    <span class="menu-title">Cause Of Cancel</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </li>
+          <li class="menu-item">
+            <div class="sub-menu-list">
+              <ul>
+                <li class="menu-item [[if _controller_name=='supplement_discount':]]active_link[[pass]]">
+                  <a href="[[=URL('supplement_discount/index')]]">
+                    <span class="menu-icon"><i class="fa-solid fa-percentage"></i></span>
+                    <span class="menu-title">Supp. Discount</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </li> 
+          <li class="menu-item sub-menu [[if _controller_name in ['utils_region']:]]open[[pass]]">
+            <a href="#">
+              <span class="menu-icon">
+                <i class="fa-solid fa-gear"></i>
+              </span>
+              <span class="menu-title">Utils</span>
+            </a>
+            <div class="sub-menu-list">
+              <ul>
+                <li class="menu-item [[if _controller_name=='utils_region':]]active_link[[pass]]">
+                  <a href="[[=URL('utils_region/index')]]">
+                    <span class="menu-icon"><i class="fa-solid fa-warehouse"></i></span>
+                    <span class="menu-title">Region</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </li>
+          <li class="menu-header">
+            <span> Transaction </span>
+          </li>
+          <li class="menu-item sub-menu [[if _controller_name in ['book_page','classified']:]]open[[pass]]">
+            <a href="#">
+              <span class="menu-icon">
+                <i class="fa-solid fa-bag-shopping"></i>
+              </span>
+              <span class="menu-title"> Booking</span>
+            </a>
+            <div class="sub-menu-list">
+              <ul>   
+                <li class="menu-item [[if _controller_name=='book_page':]]active_link[[pass]]">
+                  <a href="[[=URL('book_page/index')]]">
+                    <span class="menu-icon"><i class="fa-solid fa-warehouse"></i></span>
+                    <span class="menu-title">Book page</span>
+                  </a>
+                </li>
+          
+                <li class="menu-item [[if _controller_name=='classified':]]active_link[[pass]]">
+                  <a href="[[=URL('classified/index')]]">
+                    <span class="menu-icon"><i class="fas fa-ad"></i></span>
+                    <span class="menu-title">Classified</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </li>
+          <li class="menu-item">
+            <div class="sub-menu-list">
+              <ul>
+                <li class="menu-item [[if _controller_name=='receipt':]]active_link[[pass]]">
+                  <a href="[[=URL('receipt/index')]]">
+                    <span class="menu-icon"><i class="fa-solid fa-paper-plane"></i></span>
+                    <span class="menu-title">Receipt</span>
+                  </a>
+                </li>
+          
+                <li class="menu-item [[if _controller_name=='refund':]]active_link[[pass]]">
+                  <a href="[[=URL('refund/index')]]">
+                    <span class="menu-icon"><i class="fas fa-funnel-dollar"></i></span>
+                    <span class="menu-title">Refund</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </nav>
+    </div>
+    <div class="sidebar-footer d-flex justify-content-between">
+      <a href="#">
+        <i class="fa fa-bell"></i>
+      </a>
+      <a href="#">
+        <i class="fa fa-envelope"></i>
+      </a>
+      <a href="#">
+        <i class="fa fa-cog"></i>
+      </a>
+      <a href="#">
+        <i class="fa fa-power-off"></i>
+      </a>
+    </div>
+  </div>
+</aside>

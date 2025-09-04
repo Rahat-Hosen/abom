@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SURJO</title>
+
+  <!-- CSS CDN -->
+  <link rel="stylesheet" href="[[=URL('static','fontawesome/css/all.min.css')]]"/>
+
+  <!-- Boostrap -->
+  <link rel="stylesheet" href="[[=URL('static','css/boostrap.css')]]" />
+  <!-- Boostrap -->
+
+  <!-- Datatable -->
+  <link rel="stylesheet" href="[[=URL('static','css/datatable/datatable.css')]]" />
+  <link href="[[=URL('static','css/datatable/buttons.dataTables.css')]]" rel="stylesheet">
+
+  <!-- fixed colmn -->
+  <link href="[[=URL('static','css/datatable/fixedColumns.dataTables.css')]]" rel="stylesheet">
+  <!-- fixed colmn -->
+  <!-- Datatable end-->
+
+  <!-- select 2 -->
+  <link href="[[=URL('static','css/select2.min.css')]]" rel="stylesheet" />
+  <!-- select 2 -->
+
+  <!-- Common CSS  -->
+  <link rel="stylesheet" href="[[=URL('static','css/sidebar.css')]]" />
+  <link rel="stylesheet" href="[[=URL('static','css/style.css')]]" />
+  <link rel="stylesheet" href="[[=URL('static','css/custom_forms.css')]]" />
+  <!-- Common CSS  -->
+
+  <style>
+
+  </style>
+
+</head>
+
+<body>
+  <div style="height: 40px;background: #323452;position: fixed; width: 100%;">
+    <div class="d-flex align-items-center justify-content-between mx-3" style="height: 100%;">
+      <div class="bg-white ms-1">
+        <img src="[[=URL('static','tsmall.png')]]" width="20" height="20" alt="">
+      </div>
+      <div>
+        <div class="avatar-container">
+          <div class="avatar">AF</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="layout has-sidebar fixed-sidebar fixed-header" style="padding-top: 40px;">
+    [[include 'sidebar.html']]
+
+    <div id="overlay" class="overlay"></div>
+    <div class="layout">
+      <main class="content">
+       
+        [[block header]]
+        <!-- individual pages can customize header here -->
+        [[icon='fa fa-home']]
+        [[breadcamp='']]
+
+        [[end]]
+        [[include 'header.html']]
+      
+
+        <!--  -->
+        <div class="content-body">
+          
+          [[block content]]
+
+          [[end]]
+        </div>
+
+        [[block footer]]
+
+        
+        [[end]]
+        [[include 'footer.html']]
+    
+        <!--  -->
+
+      </main>
+      <div class="overlay"></div>
+      <!-- Modal -->
+    </div>
+  </div>
+  <div class="modal" id="staticBackdrop" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <h5 class="modal-title fs-6">Modal title</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="container">
+            <div class="mb-3 row">
+              <label for="staticEmail" class="col-sm-2 col-form-label">Name</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control form-control-sm" id="staticEmail" value="nameexample">
+              </div>
+            </div>
+            <div class="mb-3 row">
+              <label for="staticEmail" class="col-sm-2 col-form-label">Email</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control form-control-sm" id="staticEmail" value="email@example.com">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Script CDN -->  
+
+  <!-- common js -->  
+  <script src="[[=URL('static','js/popper.min.js')]]"></script>  
+  <script src="[[=URL('static','js/bootstrap.min.js')]]"></script>
+  <script src="[[=URL('static','js/jquery-3.7.1.min.js')]]"></script>
+  <!-- common js -->
+
+  <!-- sweet alert js -->
+  <script src="[[=URL('static','js/sweetalert2@11.js')]]"></script>
+  <!-- sweet alert js -->
+  
+  <!-- selct2 -->
+  <script src="[[=URL('static','js/select2.min.js')]]"></script>
+  <!-- selct2 -->
+
+  <!-- Datatable -->
+    <script src="[[=URL('static','js/datatable/datatable.js')]]"></script>  
+    
+    <!-- fixed colmn -->
+    <script src="[[=URL('static','js/datatable/dataTables.fixedColumns.js')]]"></script>  
+    <script src="[[=URL('static','js/datatable/fixedColumns.dataTables.js')]]"></script>  
+    <!-- fixed colmn -->  
+    
+    <!-- Export all-->
+    <script src="[[=URL('static','js/datatable/dataTables.buttons.js')]]"></script>    
+    <script src="[[=URL('static','js/datatable/buttons.dataTables.js')]]"></script>  
+    <script src="[[=URL('static','js/datatable/jszip.min.js')]]"></script>  
+    <script src="[[=URL('static','js/datatable/pdfmake.min.js')]]"></script>  
+    <script src="[[=URL('static','js/datatable/vfs_fonts.js')]]"></script>  
+    <script src="[[=URL('static','js/datatable/buttons.html5.min.js')]]"></script>  
+    <script src="[[=URL('static','js/datatable/buttons.print.min.js')]]"></script>
+    <!-- Export all-->
+  <!-- Datatable -->
+  
+  <script src="[[=URL('static','js/script.js')]]"></script>
+  <script src="[[=URL('static','js/common.js')]]"></script>
+
+  <script>
+  $(document).ready(function() {
+    
+    // select2 start
+    $('.select_custom').select2({
+        dropdownParent: $("#custom_form"),
+        placeholder: "Select an option",
+        allowClear:true,
+    });
+    // select2 end
+
+    // Export datatable
+    $("#ExportExcel").on("click", function() {
+      $('.dt-buttons .buttons-excel' ).click();
+    });
+
+  });
+  </script>
+
+
+  [[block scripts]]<!-- individual pages can add scripts here -->[[end]]
+
+
+  <!-- Flash Message -->
+  [[if globals().get('flash'):]]
+  [[message_text=str(flash['message']).replace('rdrdrd', '<br>')]]
+  <script>  
+    const Toast = Swal.mixin({
+      toast: true,
+      position: "top-end",
+      showConfirmButton: false,
+      customClass: {
+        popup: "customPopup",
+      },
+      timer: 3000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.onmouseenter = Swal.stopTimer;
+        toast.onmouseleave = Swal.resumeTimer;
+      }
+    });
+    Toast.fire({
+      icon:"[[=XML(flash['class'])]]",
+      title: "[[=XML(message_text)]]"
+    });
+  </script>
+  [[pass]]
+  <!-- Flash Message -->
+
+</body>
+
+</html>
